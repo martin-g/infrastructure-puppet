@@ -40,41 +40,41 @@ Facter.add("asfcolo") do
     else
       ipadd = Facter.value('ipaddress_primary')
       case ipadd
-      when /^140.211.11.([0-9]+)$/
+      when IPAddr.new('140.211.11.0/24')
         "osuosl"
-      when /^192.87.106.([0-9]+)$/
+      when IPAddr.new('192.87.106.0/24')
         "sara"
-      when /^160.45.251.([0-9]+)$/
+      when IPAddr.new('160.45.251.0/24')
         "fub"
-      when /^9.9.9.([0-9]+)$/
+      when IPAddr.new('9.9.9.0/24')
         "rackspace"
-      when /^67.195.81.([0-9]+)$/
+      when IPAddr.new('67.195.81.0/24')
         "yahoo"
-      when /^172.31.(3[2-9]|4[0-7]).([0-9]+)$/
+      when IPAddr.new('172.31.32.0/20')
         "amz-vpc-virginia-1b"
-      when /^10.0.([0-9]+).([0-9]+)$/
+      when IPAddr.new('10.0.0.0/16')
         "amz-vpc-virginia-1d"
-      when /^10.3.([0-9]+).([0-9]+)$/
+      when IPAddr.new('10.3.0.0/16')
         "amz-vpc-us-west"
-      when /^10.2.([0-9]+).([0-9]+)$/
+      when IPAddr.new('10.2.0.0/16')
         "amz-vpc-eu-west"
-      when /^10.30.([0-9]+).([0-9]+)$/
+      when IPAddr.new('10.30.0.0/16')
         "amz-vpc-eu-central"
-      when /^162.209.6.([0-9]+)$/
+      when IPAddr.new('162.209.6.0/24')
         "rax-vpc-us-mid"
-      when /^10.41.([0-9]+).([0-9]+)$/
+      when IPAddr.new('10.41.0.0/16')
         "phoenixnap-public"
-      when /^10.40.([0-9]+).([0-9]+)$/
+      when IPAddr.new('10.40.0.0/16')
         "phoenixnap-private"
-      when /^163.172.([0-9]+).([0-9]+)$/
+      when IPAddr.new('163.172.0.0/16')
         "iliad-paris"
-      when /^195.154.([0-9]+).([0-9]+)$/
+      when IPAddr.new('195.154.0.0/16')
         "iliad-paris"
-      when /^62.210.([0-9]+).([0-9]+)$/
+      when IPAddr.new('62.210.0.0/16')
         "iliad-paris"
-      when /^10.10.([0-9]+).([0-9]+)$/
+      when IPAddr.new('10.10.0.0/16')
         "lw-us"
-      when /^10.20.([0-9])+.([0-9]+)$/
+      when IPAddr.new('10.20.0.0/16')
         "lw-nl"
       else
         "default"
