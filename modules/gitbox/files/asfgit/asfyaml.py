@@ -222,9 +222,9 @@ def pelican(cfg, yml):
     print("Done!")
 
 GH_BRANCH_PROTECTION_URL_TPL = 'https://api.github.com/repos/apache/%s/branches/%s/protection?access_token=%s'
-GH_BRANCH_PROTECTION_URL_ACCEPT = 'application/vnd.github.luke-cage-preview+json';
+GH_BRANCH_PROTECTION_URL_ACCEPT = 'application/vnd.github.luke-cage-preview+json'
 
-def getEnabledProtectedBranchList (GH_TOKEN, repo_name, url):
+def getEnabledProtectedBranchList (GH_TOKEN, repo_name, url, isLast):
     if url:
         REQ_URL = '%s?access_token=%s' % (url, GH_TOKEN)
     else:
@@ -236,8 +236,9 @@ def getEnabledProtectedBranchList (GH_TOKEN, repo_name, url):
     for branch in response.json():
         branchCollection.append(branch.get("name"))
 
-    if response.links and response.links["next"]:
-        branchCollection = branchCollection + getEnabledProtectedBranchList(repo_name, response.links["next"]["url"])
+    if response.links and response.links["next"] and not isLast:
+        isLast = response.links["next"]["url"] == response.links["last"]["url"]
+        branchCollection = branchCollection + getEnabledProtectedBranchList(GH_TOKEN, repo_name, response.links["next"]["url"], isLast)
 
     return branchCollection
 
@@ -388,7 +389,7 @@ def github(cfg, yml):
         # Removing branches from this collection does not refer to removing protection settings.
         # The reaming items are considered as old and invalid branches that have protection currently enabled.
         # These branches will be stripped of its protection settings at the end.
-        enabledProtectedBranches = getEnabledProtectedBranchList(GH_TOKEN, repo_name, False)
+        enabledProtectedBranches = getEnabledProtectedBranchList(GH_TOKEN, repo_name, False, False)
 
         if protected_branches:
             # For each defined branch, fetch and format the user-defined settings and submit GH API.
@@ -406,7 +407,7 @@ def github(cfg, yml):
                 try:
                     enabledProtectedBranches.remove(pb_branch)
                 except:
-                    print('Branch is not in the exisiting branch collection. No action is required.');
+                    print('Branch is not in the exisiting branch collection. No action is required.')
 
                 # Get user settings and format for sending
                 required_status_checks = formatProtectedBranchRequiredStatusChecks(
