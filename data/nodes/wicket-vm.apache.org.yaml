@@ -20,7 +20,7 @@ vhosts_asf::vhosts::vhosts:
     serveraliases:
       - 'www.examples6x.wicket.apache.org'
     port: 80
-    ssl: false
+    ssl: true
     docroot: '/var/www'
     error_log_file: 'examples6x_error.log'
     custom_fragment: |
@@ -33,7 +33,7 @@ vhosts_asf::vhosts::vhosts:
     serveraliases:
       - 'www.examples7x.wicket.apache.org'
     port: 80
-    ssl: false
+    ssl: true
     docroot: '/var/www'
     error_log_file: 'examples7x_error.log'
     custom_fragment: |
@@ -46,7 +46,7 @@ vhosts_asf::vhosts::vhosts:
     serveraliases:
       - 'www.examples8x.wicket.apache.org'
     port: 80
-    ssl: false
+    ssl: true
     docroot: '/var/www'
     error_log_file: 'examples8x_error.log'
     custom_fragment: |
@@ -57,5 +57,24 @@ vhosts_asf::vhosts::vhosts:
       RewriteCond %%{}{HTTP:UPGRADE} websocket [NC]
       RewriteCond %%{}{HTTP:CONNECTION} Upgrade$ [NC]
       RewriteRule .* ws://127.0.0.1:8088%%{}{REQUEST_URI} [P]
+      ProxyPreserveHost On
+  examples9x-80:
+    vhost_name: '*'
+    priority: '12'
+    servername: 'examples9x.wicket.apache.org'
+    serveraliases:
+      - 'www.examples9x.wicket.apache.org'
+    port: 80
+    ssl: true
+    docroot: '/var/www'
+    error_log_file: 'examples9x_error.log'
+    custom_fragment: |
+      ProxyPass / http://127.0.0.1:8089/
+      ProxyPassReverse / http://127.0.0.1:8089/
+      #websockets
+      RewriteEngine On
+      RewriteCond %%{}{HTTP:UPGRADE} websocket [NC]
+      RewriteCond %%{}{HTTP:CONNECTION} Upgrade$ [NC]
+      RewriteRule .* ws://127.0.0.1:8089%%{}{REQUEST_URI} [P]
       ProxyPreserveHost On
       
