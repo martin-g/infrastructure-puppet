@@ -244,30 +244,40 @@ def getEnabledProtectedBranchList (GH_TOKEN, repo_name, url, isLast):
 
 def setProtectedBranch (GH_TOKEN, repo_name, branch, required_status_checks, required_pull_request_reviews):
     REQ_URL = GH_BRANCH_PROTECTION_URL_TPL % (repo_name, branch, GH_TOKEN)
-    response = None
+    response = requests.put(REQ_URL, headers = {'Accept': GH_BRANCH_PROTECTION_URL_ACCEPT}, json = {
+        'enforce_admins': None,
+        'restrictions': None,
+        'required_status_checks': required_status_checks,
+        'required_pull_request_reviews': required_pull_request_reviews
+    })
+    json = response.json()
 
-    try:
-        response = requests.put(REQ_URL, headers = {'Accept': GH_BRANCH_PROTECTION_URL_ACCEPT}, json = {
-            'enforce_admins': None,
-            'restrictions': None,
-            'required_status_checks': required_status_checks,
-            'required_pull_request_reviews': required_pull_request_reviews
-        })
-        print("GitHub Protected Branches has been enabled on branch=%s" % (pb_branch))
-    except:
-        print("Failed to enabled the GitHub protected branche setting for branch=%s" % (pb_branch))
+    if response.status_code != 200:
+        raise Exception(
+            "[GitHub] Request error with messaage: \"%s\". (status code: %s)" % (
+                json.get("message"),
+                response.status_code
+            )
+        )
+
+    print("GitHub Protected Branches has been enabled on branch=%s" % (pb_branch))
 
     return response
 
 def removeProtectedBranch (GH_TOKEN, repo_name, branch):
     REQ_URL = GH_BRANCH_PROTECTION_URL_TPL % (repo_name, branch, GH_TOKEN)
-    response = None
+    response = requests.delete(REQ_URL)
+    json = response.json()
 
-    try:
-        response = requests.delete(REQ_URL)
-        print("GitHub Protected Branches has been be removed from branch=%s" % (branch))
-    except:
-        print("Failed to remove the GitHub protected branche settings from branch=%s" % (branch))
+    if response.status_code != 200:
+        raise Exception(
+            "[GitHub] Request error with messaage: \"%s\". (status code: %s)" % (
+                json.get("message"),
+                response.status_code
+            )
+        )
+
+    print("GitHub Protected Branches has been be removed from branch=%s" % (branch))
 
     return response
 
@@ -280,17 +290,24 @@ def setProtectedBranchRequiredSignature (GH_TOKEN, repo_name, pb_branch, require
         required_signatures = False
         print('The GitHub protected branch setting "required_signatures" contains an invalid value. It will be set to "False"')
 
-    try:
-        if required_signatures:
-            signature_rv = requests.post(REQ_URL, headers = {'Accept': ACCEPT_HEADER})
-        else:
-            signature_rv = requests.delete(REQ_URL, headers = {'Accept': ACCEPT_HEADER})
+    if required_signatures:
+        response = requests.post(REQ_URL, headers = {'Accept': ACCEPT_HEADER})
+    else:
+        response = requests.delete(REQ_URL, headers = {'Accept': ACCEPT_HEADER})
 
-        print("GitHub Protected Branches has set requires signature setting on branch '%s' to '%s'" % (pb_branch, required_signatures))
-    except:
-        print("Failed to set the GitHub protected branches requires signature setting on branch '%s'" % (pb_branch))
+    json = response.json()
 
-    return signature_rv
+    if response.status_code != 200:
+        raise Exception(
+            "[GitHub] Request error with messaage: \"%s\". (status code: %s)" % (
+                json.get("message"),
+                response.status_code
+            )
+        )
+
+    print("GitHub Protected Branches has set requires signature setting on branch '%s' to '%s'" % (pb_branch, required_signatures))
+
+    return response
 
 def formatProtectedBranchRequiredStatusChecks(required_status_checks):
     if type(required_status_checks) is dict:
@@ -407,7 +424,7 @@ def github(cfg, yml):
                 try:
                     enabledProtectedBranches.remove(pb_branch)
                 except:
-                    print('Branch is not in the exisiting branch collection. No action is required.')
+                    print('Branch "%s" is not in the exisiting branch collection. No action is required.' % (pb_branch))
 
                 # Get user settings and format for sending
                 required_status_checks = formatProtectedBranchRequiredStatusChecks(
