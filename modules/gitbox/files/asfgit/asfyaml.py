@@ -444,7 +444,7 @@ def notifications(cfg, yml):
         if k not in valid_schemes:
             raise Exception("Invalid notification scheme '%s' detected, please remove it!" % k)
         # Verify that all set schemes pass muster and point to $foo@$project.a.o
-        if not re.match(r"[-a-z0-9]+@[-a-z0-9]+(\.incubator)?\.apache\.org$" % pname, v)\
+        if not re.match(r"[-a-z0-9]+@[-a-z0-9]+(\.incubator)?\.apache\.org$", v)\
             or not (
                 v.endswith('@%s.apache.org' % pname) or
                 v.endswith('@%s.incubator.apache.org' % pname)
