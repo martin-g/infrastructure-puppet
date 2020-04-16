@@ -406,3 +406,74 @@ def publish(cfg, yml):
     except Exception as e:
         print(e)
         asfgit.log.exception()
+
+
+def notifications(cfg, yml):
+    """ Notification scheme setup """
+    valid_schemes = [
+        'commits',
+        'issues',
+        'pullrequests',
+        'issues_status',
+        'issues_comment',
+        'pullrequests_status',
+        'pullrequests_comment',
+    ]
+
+    # Get branch
+    ref = yml.get('refname', 'master').replace('refs/heads/', '')
+
+    # Ensure this is master, or bail
+    if ref != 'master' and ref != 'trunk':
+        print("[NOTICE] Notification scheme settings can only be applied to the master or trunk branch.")
+        return
+
+    # infer project name
+    m = re.match(r"(?:incubator-)?([^-.]+)", cfg.repo_name)
+    pname = m.group(1)
+    pname = WSMAP.get(pname, pname)
+
+    # Verify that we know all settings in the yaml
+    if type(yml) is not dict:
+        raise Exception("Notification schemes must be simple 'key: value' pairs!")
+
+    for k, v in yml.items():
+        if type(v) is not str:
+            raise Exception("Invalid value for setting '%s' - must be string value!" % k)
+        if k not in valid_schemes:
+            raise Exception("Invalid notification scheme '%s' detected, please remove it!" % k)
+        # Verify that all set schemes pass muster and point to $foo@$project.a.o
+        if not re.match(r"[-a-z0-9]+@[-a-z0-9]+(\.incubator)?\.apache\.org$" % pname, v)\
+            or not (
+                v.endswith('@%s.apache.org' % pname) or
+                v.endswith('@%s.incubator.apache.org' % pname)
+            ):
+            raise Exception("Invalid notification target '%s'. Must be a valid @%s.apache.org list!" % (v, pname))
+
+    # All seems kosher, update settings
+    scheme_path = os.path.join(cfg.repo_dir, 'notification_schemes.yaml')
+    print("Updating notification schemes for repository: ")
+    old_yml = {}
+    if os.path.exists(scheme_path):
+        old_yml = yaml.safe_load(open(scheme_path).read())
+    
+    # Figure out what changed since last
+    for key in valid_schemes:
+        if key not in old_yml and key in yml:
+            print("- adding new scheme (%s): %s" % (key, yml[key]))
+        elif key in old_yml and key not in yml:
+            print("- removing old scheme (%s) - was %s" % (key, old_yml[key]))
+        elif key in old_yml and key in yml:
+            print("- updating scheme %s: %s -> %s" % (key, old_yml[key], yml[key]))
+
+    with open(scheme_path, 'w') as fp:
+        yaml.dump(yml, fp, default_flow_style=False)
+
+    # Tell project what happened, on private@
+    msg = "The following notification schemes have been set on %s.git:\n\n%s\n\nWith regards,\nASF Infra.\n" \
+          % (cfg.repo_name, yaml.dump(yml, default_flow_style=False))
+    asfpy.messaging.mail(
+        sender='GitBox <gitbox@apache.org>',
+        recipients=['private@%s.apache.org' % pname],
+        subject="Notification schemes for %s.git updated",
+        message=msg)
