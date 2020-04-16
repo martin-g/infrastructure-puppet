@@ -476,5 +476,5 @@ def notifications(cfg, yml):
     asfpy.messaging.mail(
         sender='GitBox <gitbox@apache.org>',
         recipients=['private@%s.apache.org' % pname],
-        subject="Notification schemes for %s.git updated",
+        subject="Notification schemes for %s.git updated" % cfg.repo_name,
         message=msg)
