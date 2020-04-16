@@ -451,20 +451,25 @@ def notifications(cfg, yml):
             ):
             raise Exception("Invalid notification target '%s'. Must be a valid @%s.apache.org list!" % (v, pname))
 
-    # All seems kosher, update settings
+    # All seems kosher, update settings if need be
     scheme_path = os.path.join(cfg.repo_dir, 'notification_schemes.yaml')
-    print("Updating notification schemes for repository: ")
     old_yml = {}
     if os.path.exists(scheme_path):
         old_yml = yaml.safe_load(open(scheme_path).read())
-    
+
+    # If old and new are identical, do nothing...
+    if old_yml == yml:
+        return
+
+    print("Updating notification schemes for repository: ")
+
     # Figure out what changed since last
     for key in valid_schemes:
         if key not in old_yml and key in yml:
             print("- adding new scheme (%s): %s" % (key, yml[key]))
         elif key in old_yml and key not in yml:
             print("- removing old scheme (%s) - was %s" % (key, old_yml[key]))
-        elif key in old_yml and key in yml:
+        elif key in old_yml and key in yml and old_yml[key] != yml[key]:
             print("- updating scheme %s: %s -> %s" % (key, old_yml[key], yml[key]))
 
     with open(scheme_path, 'w') as fp:
