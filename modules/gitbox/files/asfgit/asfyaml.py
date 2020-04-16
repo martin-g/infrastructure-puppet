@@ -6,6 +6,7 @@ import re
 import github as pygithub
 import os
 import yaml
+import asfpy.messaging
 
 # LDAP to CNAME mappings for some projects
 WSMAP = {
