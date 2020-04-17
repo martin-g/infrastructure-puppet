@@ -6,6 +6,7 @@ import re
 import github as pygithub
 import os
 import yaml
+import asfpy.messaging
 
 # LDAP to CNAME mappings for some projects
 WSMAP = {
@@ -14,6 +15,20 @@ WSMAP = {
     'webservices': 'ws',
     'infrastructure': 'infra',
 }
+
+# Notification scheme setup
+NOTIFICATION_SETTINGS_FILE = 'notifications.yaml'
+VALID_NOTIFICATION_SCHEMES = [
+        'commits',
+        'issues',
+        'pullrequests',
+        'issues_status',
+        'issues_comment',
+        'pullrequests_status',
+        'pullrequests_comment',
+]
+# regex for valid ASF mailing list
+RE_VALID_MAILINGLIST = re.compile(r"[-a-z0-9]+@[-a-z0-9]+(\.incubator)?\.apache\.org$")
 
 def jenkins(cfg, yml):
     
@@ -406,3 +421,71 @@ def publish(cfg, yml):
     except Exception as e:
         print(e)
         asfgit.log.exception()
+
+
+def notifications(cfg, yml):
+    """ Notification scheme setup """
+
+    # Get branch
+    ref = yml.get('refname', 'master').replace('refs/heads/', '')
+
+    # Ensure this is master, or bail
+    if ref != 'master' and ref != 'trunk':
+        print("[NOTICE] Notification scheme settings can only be applied to the master or trunk branch.")
+        return
+
+    # infer project name
+    m = re.match(r"(?:incubator-)?([^-.]+)", cfg.repo_name)
+    pname = m.group(1)
+    pname = WSMAP.get(pname, pname)
+
+    # Verify that we know all settings in the yaml
+    if not isinstance(yml, dict):
+        raise Exception("Notification schemes must be simple 'key: value' pairs!")
+
+    for k, v in yml.items():
+        if not isinstance(v, str):
+            raise Exception("Invalid value for setting '%s' - must be string value!" % k)
+        if k not in VALID_NOTIFICATION_SCHEMES:
+            raise Exception("Invalid notification scheme '%s' detected, please remove it!" % k)
+        # Verify that all set schemes pass muster and point to $foo@$project.a.o
+        if not RE_VALID_MAILINGLIST.match(v)\
+            or not (
+                v.endswith('@%s.apache.org' % pname) or
+                v.endswith('@%s.incubator.apache.org' % pname)
+            ):
+            raise Exception("Invalid notification target '%s'. Must be a valid @%s.apache.org list!" % (v, pname))
+
+    # All seems kosher, update settings if need be
+    scheme_path = os.path.join(cfg.repo_dir, NOTIFICATION_SETTINGS_FILE)
+    old_yml = {}
+    if os.path.exists(scheme_path):
+        old_yml = yaml.safe_load(open(scheme_path).read())
+
+    # If old and new are identical, do nothing...
+    if old_yml == yml:
+        return
+
+    print("Updating notification schemes for repository: ")
+    changes = ""
+    # Figure out what changed since last
+    for key in VALID_NOTIFICATION_SCHEMES:
+        if key not in old_yml and key in yml:
+            changes += "- adding new scheme (%s): %s\n" % (key, yml[key])
+        elif key in old_yml and key not in yml:
+            changes += "- removing old scheme (%s) - was %s\n" % (key, old_yml[key])
+        elif key in old_yml and key in yml and old_yml[key] != yml[key]:
+            changes += "- updating scheme %s: %s -> %s" % (key, old_yml[key], yml[key])
+    print(changes)
+    
+    with open(scheme_path, 'w') as fp:
+        yaml.dump(yml, fp, default_flow_style=False)
+
+    # Tell project what happened, on private@
+    msg = "The following notification schemes have been changed on %s:\n\n%s\n\nWith regards,\nASF Infra.\n" \
+          % (cfg.repo_name, changes)
+    asfpy.messaging.mail(
+        sender='GitBox <gitbox@apache.org>',
+        recipients=['private@%s.apache.org' % pname],
+        subject="Notification schemes for %s.git updated" % cfg.repo_name,
+        message=msg)
