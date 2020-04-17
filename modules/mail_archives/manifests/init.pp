@@ -248,7 +248,7 @@ class mail_archives (
     'update-index':
       user        => $username,
       minute      => '27',
-      command     => "/home/${username}/scripts/setlock.pl /home/${username}/.update-lockfile /home/${username}/scripts/update-index",
+      command     => "/home/${username}/scripts/setlock.pl -t 600 /home/${username}/.update-lockfile /home/${username}/scripts/update-index",
       environment => [
         'PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin',
         'SHELL=/bin/zsh'
