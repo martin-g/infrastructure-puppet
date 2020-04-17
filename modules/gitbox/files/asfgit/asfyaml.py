@@ -14,6 +14,7 @@ WSMAP = {
     'empire': 'empire-db',
     'webservices': 'ws',
     'infrastructure': 'infra',
+    'comdev': 'community',
 }
 
 # Notification scheme setup
