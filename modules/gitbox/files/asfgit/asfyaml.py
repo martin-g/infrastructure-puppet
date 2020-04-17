@@ -438,11 +438,11 @@ def notifications(cfg, yml):
     pname = WSMAP.get(pname, pname)
 
     # Verify that we know all settings in the yaml
-    if type(yml) is not dict:
+    if not isinstance(yml, dict):
         raise Exception("Notification schemes must be simple 'key: value' pairs!")
 
     for k, v in yml.items():
-        if type(v) is not str:
+        if not isinstance(v, str):
             raise Exception("Invalid value for setting '%s' - must be string value!" % k)
         if k not in VALID_NOTIFICATION_SCHEMES:
             raise Exception("Invalid notification scheme '%s' detected, please remove it!" % k)
