@@ -15,7 +15,7 @@ WSMAP = {
 
 def main():
     reponame = os.environ.get('QUERY_STRING', '')
-    if not reponame or not re.match(r"[-_a-z0-9]+(\.git)?", reponame):
+    if not reponame or not re.match(r"^[-_a-z0-9]+(\.git)?$", reponame):
         print("Status: 404 Not Found")
         print("Content-Type: text/plain")
         print("")
