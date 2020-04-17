@@ -16,6 +16,18 @@ WSMAP = {
     'infrastructure': 'infra',
 }
 
+# Notification scheme setup
+NOTIFICATION_SETTINGS_FILE = 'notifications.yaml'
+VALID_NOTIFICATION_SCHEMES = [
+        'commits',
+        'issues',
+        'pullrequests',
+        'issues_status',
+        'issues_comment',
+        'pullrequests_status',
+        'pullrequests_comment',
+]
+
 def jenkins(cfg, yml):
     
     # GitHub PR Builder Whitelist for known (safe) contributors
@@ -411,15 +423,6 @@ def publish(cfg, yml):
 
 def notifications(cfg, yml):
     """ Notification scheme setup """
-    valid_schemes = [
-        'commits',
-        'issues',
-        'pullrequests',
-        'issues_status',
-        'issues_comment',
-        'pullrequests_status',
-        'pullrequests_comment',
-    ]
 
     # Get branch
     ref = yml.get('refname', 'master').replace('refs/heads/', '')
@@ -441,7 +444,7 @@ def notifications(cfg, yml):
     for k, v in yml.items():
         if type(v) is not str:
             raise Exception("Invalid value for setting '%s' - must be string value!" % k)
-        if k not in valid_schemes:
+        if k not in VALID_NOTIFICATION_SCHEMES:
             raise Exception("Invalid notification scheme '%s' detected, please remove it!" % k)
         # Verify that all set schemes pass muster and point to $foo@$project.a.o
         if not re.match(r"[-a-z0-9]+@[-a-z0-9]+(\.incubator)?\.apache\.org$", v)\
@@ -452,7 +455,7 @@ def notifications(cfg, yml):
             raise Exception("Invalid notification target '%s'. Must be a valid @%s.apache.org list!" % (v, pname))
 
     # All seems kosher, update settings if need be
-    scheme_path = os.path.join(cfg.repo_dir, 'notification_schemes.yaml')
+    scheme_path = os.path.join(cfg.repo_dir, NOTIFICATION_SETTINGS_FILE)
     old_yml = {}
     if os.path.exists(scheme_path):
         old_yml = yaml.safe_load(open(scheme_path).read())
@@ -462,22 +465,23 @@ def notifications(cfg, yml):
         return
 
     print("Updating notification schemes for repository: ")
-
+    changes = ""
     # Figure out what changed since last
-    for key in valid_schemes:
+    for key in VALID_NOTIFICATION_SCHEMES:
         if key not in old_yml and key in yml:
-            print("- adding new scheme (%s): %s" % (key, yml[key]))
+            changes += "- adding new scheme (%s): %s\n" % (key, yml[key])
         elif key in old_yml and key not in yml:
-            print("- removing old scheme (%s) - was %s" % (key, old_yml[key]))
+            changes += "- removing old scheme (%s) - was %s\n" % (key, old_yml[key])
         elif key in old_yml and key in yml and old_yml[key] != yml[key]:
-            print("- updating scheme %s: %s -> %s" % (key, old_yml[key], yml[key]))
-
+            changes += "- updating scheme %s: %s -> %s" % (key, old_yml[key], yml[key])
+    print(changes)
+    
     with open(scheme_path, 'w') as fp:
         yaml.dump(yml, fp, default_flow_style=False)
 
     # Tell project what happened, on private@
-    msg = "The following notification schemes have been set on %s.git:\n\n%s\n\nWith regards,\nASF Infra.\n" \
-          % (cfg.repo_name, yaml.dump(yml, default_flow_style=False))
+    msg = "The following notification schemes have been changed on %s:\n\n%s\n\nWith regards,\nASF Infra.\n" \
+          % (cfg.repo_name, changes)
     asfpy.messaging.mail(
         sender='GitBox <gitbox@apache.org>',
         recipients=['private@%s.apache.org' % pname],
