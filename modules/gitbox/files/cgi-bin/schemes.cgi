@@ -23,7 +23,7 @@ def main():
     else:
         if not reponame.endswith('.git'):
             reponame += '.git'
-        if os.path.exists('/x1/gitbox/repos/asf/%s' % reponame):
+        if not os.path.exists('/x1/repos/asf/%s' % reponame):
             print("Status: 404 Not Found")
             print("Content-Type: text/plain")
             print("")
