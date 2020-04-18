@@ -10,7 +10,6 @@ import os
 import sys
 import subprocess as sp
 import asfgit.run as run
-import git
 import re
 import yaml
 
@@ -41,12 +40,10 @@ def get_recipient(repo, itype, action):
                     pass
 
             # Check standard git config
-            cfg_path = os.path.join(repo_path, 'config')
-            cfg = git.GitConfigParser(cfg_path)
-            scheme['commits'] = cfg.get('hooks.asfgit', 'recips')
-            if cfg.has_option('apache', 'dev'):
-                scheme['issues'] = cfg.get('apache', 'dev')
-                scheme['pullrequests'] = cfg.get('apache', 'dev')
+            scheme['commits'] = _git_config("hooks.asfgit.recips")
+            if _git_config("apache.dev"):
+                scheme['issues'] = _git_config("apache.dev")
+                scheme['pullrequests'] = _git_config("apache.dev")
             break
 
     if scheme:
