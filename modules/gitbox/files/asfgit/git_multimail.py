@@ -67,8 +67,8 @@ def get_recipient(repo, itype, action):
 
             # Check standard git config
             if not 'commits' in scheme:
-                scheme['commits'] = _git_config("hooks.asfgit.recips")
-            default_issue =  _git_config("apache.dev")
+                scheme['commits'] = _git_config("hooks.asfgit.recips", FALLBACK_ADDRESS)
+            default_issue =  _git_config("apache.dev", "")
             if default_issue:                
                 if not 'issues' in scheme:
                     scheme['issues'] = default_issue
