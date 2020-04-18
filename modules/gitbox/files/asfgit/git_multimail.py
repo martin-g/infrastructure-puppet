@@ -15,6 +15,32 @@ import yaml
 
 FORCE_DIFF = True if os.environ.get('FORCE_DIFF', 'NO') == 'YES' else False
 
+def _repo_name():
+    path = filter(None, os.environ["PATH_INFO"].split("/"))
+    path = filter(lambda p: p != "git-receive-pack", path)
+    if len(path) != 1:
+        raise ValueError("Invalid PATH_INFO: %s" % os.environ["PATH_INFO"])
+    path = path[0]
+    if path[-4:] == ".git":
+        return path[:-4]
+    return path
+
+def _git_config(key, default=NO_DEFAULT):
+    cmd = ["config", key]
+    try:
+        # If wiki edit, chdir to origin repo
+        if os.environ.get("GIT_ORIGIN_REPO"):
+            os.chdir(os.environ.get("GIT_ORIGIN_REPO"))
+        x = run.git(*cmd)[1].strip()
+        # chdir back to wiki dir if needed
+        if os.environ.get("GIT_WIKI_REPO"):
+            os.chdir(os.environ["GIT_WIKI_REPO"])
+        return x
+    except sp.CalledProcessError:
+        if default == NO_DEFAULT:
+            raise
+        return default
+
 def get_recipient(repo, itype, action):
     """ Finds the right email recipient for a repo and an action. """
     scheme = {}
@@ -64,32 +90,7 @@ def get_recipient(repo, itype, action):
     return "dev@%s.apache.org" % project
 
 
-def _repo_name():
-    path = filter(None, os.environ["PATH_INFO"].split("/"))
-    path = filter(lambda p: p != "git-receive-pack", path)
-    if len(path) != 1:
-        raise ValueError("Invalid PATH_INFO: %s" % os.environ["PATH_INFO"])
-    path = path[0]
-    if path[-4:] == ".git":
-        return path[:-4]
-    return path
-
-def _git_config(key, default=NO_DEFAULT):
-    cmd = ["config", key]
-    try:
-        # If wiki edit, chdir to origin repo
-        if os.environ.get("GIT_ORIGIN_REPO"):
-            os.chdir(os.environ.get("GIT_ORIGIN_REPO"))
-        x = run.git(*cmd)[1].strip()
-        # chdir back to wiki dir if needed
-        if os.environ.get("GIT_WIKI_REPO"):
-            os.chdir(os.environ["GIT_WIKI_REPO"])
-        return x
-    except sp.CalledProcessError:
-        if default == NO_DEFAULT:
-            raise
-        return default
-
+    
 DEFAULT_COMMIT_URL = 'https://github.com/apache/%(repo_shortname)s/commit/%(id)s'
 DEFAULT_SUBJECT = "%(repo)s git commit: %(subject)s"
 repo_name = _repo_name()
