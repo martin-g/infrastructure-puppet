@@ -12,6 +12,8 @@ import subprocess as sp
 import asfgit.run as run
 import git
 import re
+import yaml
+
 FORCE_DIFF = True if os.environ.get('FORCE_DIFF', 'NO') == 'YES' else False
 
 def get_recipient(repo, itype, action):
@@ -96,7 +98,8 @@ repo_name = _repo_name()
 repo_dir = os.path.join(os.environ.get("GIT_PROJECT_ROOT"), "%s.git" % repo_name)
 committer = os.environ.get("GIT_COMMITTER_NAME")
 sendmail = _git_config("hooks.asfgit.sendmail").strip()
-recips = [get_recipient(repo_name, 'commit', None)]
+recipient = get_recipient(repo_name, 'commit', None)
+recips = ['"%s" <%s>' % (recipient, recipient)]
 subject_fmt = _git_config("hooks.asfgit.subject-fmt", DEFAULT_SUBJECT)
 max_size = int(_git_config("hooks.asfgit.max-size"))
 max_emails = int(_git_config("hooks.asfgit.max-emails"))
