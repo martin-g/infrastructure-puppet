@@ -2,13 +2,67 @@
 
 # ASF PART GOES HERE
 NO_DEFAULT = object()
+ROOT_DIRS = ['/x1/repos/asf', '/x1/repos/private']
+SCHEME_FILE = 'notifications.yaml'
 
 import asfgit.util as util
 import os
 import sys
 import subprocess as sp
 import asfgit.run as run
+import git
+import re
 FORCE_DIFF = True if os.environ.get('FORCE_DIFF', 'NO') == 'YES' else False
+
+def get_recipient(repo, itype, action):
+    """ Finds the right email recipient for a repo and an action. """
+    scheme = {}
+    m = re.match(r"(?:incubator-)([^-]+)", repo)
+    if m:
+        project = m.group(1)
+    else:
+        project = 'infra'
+    # Cut .git from repo name if passed along
+    if repo.endswith('.git'):
+        repo = repo[:-4]
+    # Check each repo root dirs for the repository
+    for root_dir in ROOT_DIRS:
+        repo_path = os.path.join(root_dir, "%s.git" % repo)
+        if os.path.exists(repo_path):
+            # Check for notifications.yaml first
+            scheme_path = os.path.join(repo_path, SCHEME_FILE)
+            if os.path.exists(scheme_path):
+                try:
+                    scheme = yaml.safe_load(open(scheme_path))
+                    break
+                except:
+                    pass
+
+            # Check standard git config
+            cfg_path = scheme_path = os.path.join(repo_path, 'config')
+            cfg = git.GitConfigParser(cfg_path)
+            scheme['commits'] = cfg.get('hooks.asfgit', 'recips')
+            if cfg.has_option('apache', 'dev'):
+                scheme['issues'] = cfg.get('apache', 'dev')
+                scheme['pullrequests'] = cfg.get('apache', 'dev')
+
+    if scheme:
+        if itype != 'commit':
+            it = 'issues' if itype == 'issue' else 'pullrequests'
+            if action in ['comment', 'diffcomment', 'edited', 'deleted', 'created']:
+                if ("%s_comment" % it) in scheme:
+                    return scheme["%s_comment" % it]
+                elif it in scheme:
+                    return scheme[it]
+            elif action in ['open', 'close', 'merge']:
+                if ("%s_status" % it) in scheme:
+                    return scheme["%s_status" % it]
+                elif it in scheme:
+                    return scheme[it]
+        elif 'commits' in scheme:
+            return scheme['commits']
+    return "dev@%s.apache.org" % project
+
 
 def _repo_name():
     path = filter(None, os.environ["PATH_INFO"].split("/"))
@@ -42,8 +96,7 @@ repo_name = _repo_name()
 repo_dir = os.path.join(os.environ.get("GIT_PROJECT_ROOT"), "%s.git" % repo_name)
 committer = os.environ.get("GIT_COMMITTER_NAME")
 sendmail = _git_config("hooks.asfgit.sendmail").strip()
-recips = [str('"%s" <%s>' % (k, k) )for k in _git_config("hooks.asfgit.recips").strip().split()]
-recips = filter(lambda x: len(x) > 5, recips)
+recips = [get_recipient(repo_name, 'commit', None)]
 subject_fmt = _git_config("hooks.asfgit.subject-fmt", DEFAULT_SUBJECT)
 max_size = int(_git_config("hooks.asfgit.max-size"))
 max_emails = int(_git_config("hooks.asfgit.max-emails"))
