@@ -483,8 +483,8 @@ def notifications(cfg, yml):
         yaml.dump(yml, fp, default_flow_style=False)
 
     # Tell project what happened, on private@
-    msg = "The following notification schemes have been changed on %s:\n\n%s\n\nWith regards,\nASF Infra.\n" \
-          % (cfg.repo_name, changes)
+    msg = "The following notification schemes have been changed on %s by %s:\n\n%s\n\nWith regards,\nASF Infra.\n" \
+          % (cfg.repo_name, cfg.committer, changes)
     asfpy.messaging.mail(
         sender='GitBox <gitbox@apache.org>',
         recipients=['private@%s.apache.org' % pname],
