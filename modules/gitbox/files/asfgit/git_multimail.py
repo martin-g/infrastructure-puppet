@@ -61,15 +61,18 @@ def get_recipient(repo, itype, action):
             if os.path.exists(scheme_path):
                 try:
                     scheme = yaml.safe_load(open(scheme_path))
-                    break
                 except:
                     pass
 
             # Check standard git config
-            scheme['commits'] = _git_config("hooks.asfgit.recips")
-            if _git_config("apache.dev"):
-                scheme['issues'] = _git_config("apache.dev")
-                scheme['pullrequests'] = _git_config("apache.dev")
+            if not 'commits' in scheme:
+                scheme['commits'] = _git_config("hooks.asfgit.recips")
+            default_issue =  _git_config("apache.dev")
+            if default_issue:                
+                if not 'issues' in scheme:
+                    scheme['issues'] = default_issue
+                if not 'pullrequests' in scheme:
+                    scheme['pullrequests'] = default_issue
             break
 
     if scheme:
@@ -87,8 +90,7 @@ def get_recipient(repo, itype, action):
                     return scheme[it]
         elif 'commits' in scheme:
             return scheme['commits']
-    return "dev@%s.apache.org" % project
-
+    return "team@infra.apache.org"  # If we can't extract a target
 
     
 DEFAULT_COMMIT_URL = 'https://github.com/apache/%(repo_shortname)s/commit/%(id)s'
