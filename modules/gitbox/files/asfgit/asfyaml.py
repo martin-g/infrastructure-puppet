@@ -443,7 +443,7 @@ def notifications(cfg, yml):
     # Verify that we know all settings in the yaml
     if not isinstance(yml, dict):
         raise Exception("Notification schemes must be simple 'key: value' pairs!")
-
+    del yml['refname'] # Don't need this
     for k, v in yml.items():
         if not isinstance(v, str):
             raise Exception("Invalid value for setting '%s' - must be string value!" % k)
