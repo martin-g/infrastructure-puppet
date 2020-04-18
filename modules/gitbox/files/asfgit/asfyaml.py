@@ -254,7 +254,7 @@ def setProtectedBranch (GH_TOKEN, repo_name, branch, required_status_checks, req
 
     if response.status_code != 200:
         raise Exception(
-            "[GitHub] Request error with messaage: \"%s\". (status code: %s)" % (
+            "[GitHub] Request error with message: \"%s\". (status code: %s)" % (
                 json.get("message"),
                 response.status_code
             )
@@ -271,7 +271,7 @@ def removeProtectedBranch (GH_TOKEN, repo_name, branch):
 
     if response.status_code != 200:
         raise Exception(
-            "[GitHub] Request error with messaage: \"%s\". (status code: %s)" % (
+            "[GitHub] Request error with message: \"%s\". (status code: %s)" % (
                 json.get("message"),
                 response.status_code
             )
@@ -299,7 +299,7 @@ def setProtectedBranchRequiredSignature (GH_TOKEN, repo_name, pb_branch, require
 
     if response.status_code != 200:
         raise Exception(
-            "[GitHub] Request error with messaage: \"%s\". (status code: %s)" % (
+            "[GitHub] Request error with message: \"%s\". (status code: %s)" % (
                 json.get("message"),
                 response.status_code
             )
