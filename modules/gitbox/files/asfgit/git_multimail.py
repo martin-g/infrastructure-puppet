@@ -4,6 +4,7 @@
 NO_DEFAULT = object()
 ROOT_DIRS = ['/x1/repos/asf', '/x1/repos/private']
 SCHEME_FILE = 'notifications.yaml'
+FALLBACK_ADDRESS = 'team@infra.apache.org'
 
 import asfgit.util as util
 import os
@@ -81,16 +82,14 @@ def get_recipient(repo, itype, action):
             if action in ['comment', 'diffcomment', 'edited', 'deleted', 'created']:
                 if ("%s_comment" % it) in scheme:
                     return scheme["%s_comment" % it]
-                elif it in scheme:
-                    return scheme[it]
+                return scheme.get(it, FALLBACK_ADDRESS)
             elif action in ['open', 'close', 'merge']:
                 if ("%s_status" % it) in scheme:
                     return scheme["%s_status" % it]
-                elif it in scheme:
-                    return scheme[it]
+                return scheme.get(it, FALLBACK_ADDRESS)
         elif 'commits' in scheme:
             return scheme['commits']
-    return "team@infra.apache.org"  # If we can't extract a target
+    return FALLBACK_ADDRESS  # If we can't extract a target, return fallback
 
     
 DEFAULT_COMMIT_URL = 'https://github.com/apache/%(repo_shortname)s/commit/%(id)s'
