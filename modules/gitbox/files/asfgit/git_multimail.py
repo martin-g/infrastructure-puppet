@@ -47,6 +47,7 @@ def get_recipient(repo, itype, action):
             if cfg.has_option('apache', 'dev'):
                 scheme['issues'] = cfg.get('apache', 'dev')
                 scheme['pullrequests'] = cfg.get('apache', 'dev')
+            break
 
     if scheme:
         if itype != 'commit':
