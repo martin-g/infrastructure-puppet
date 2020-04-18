@@ -41,7 +41,7 @@ def get_recipient(repo, itype, action):
                     pass
 
             # Check standard git config
-            cfg_path = scheme_path = os.path.join(repo_path, 'config')
+            cfg_path = os.path.join(repo_path, 'config')
             cfg = git.GitConfigParser(cfg_path)
             scheme['commits'] = cfg.get('hooks.asfgit', 'recips')
             if cfg.has_option('apache', 'dev'):
