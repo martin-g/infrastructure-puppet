@@ -27,6 +27,7 @@ VALID_NOTIFICATION_SCHEMES = [
         'issues_comment',
         'pullrequests_status',
         'pullrequests_comment',
+        'jira_options'
 ]
 # regex for valid ASF mailing list
 RE_VALID_MAILINGLIST = re.compile(r"[-a-z0-9]+@[-a-z0-9]+(\.incubator)?\.apache\.org$")
@@ -450,12 +451,13 @@ def notifications(cfg, yml):
         if k not in VALID_NOTIFICATION_SCHEMES:
             raise Exception("Invalid notification scheme '%s' detected, please remove it!" % k)
         # Verify that all set schemes pass muster and point to $foo@$project.a.o
-        if not RE_VALID_MAILINGLIST.match(v)\
-            or not (
-                v.endswith('@%s.apache.org' % pname) or
-                v.endswith('@%s.incubator.apache.org' % pname)
-            ):
-            raise Exception("Invalid notification target '%s'. Must be a valid @%s.apache.org list!" % (v, pname))
+        if k != 'jira_options':
+            if not RE_VALID_MAILINGLIST.match(v)\
+                or not (
+                    v.endswith('@%s.apache.org' % pname) or
+                    v.endswith('@%s.incubator.apache.org' % pname)
+                ):
+                raise Exception("Invalid notification target '%s'. Must be a valid @%s.apache.org list!" % (v, pname))
 
     # All seems kosher, update settings if need be
     scheme_path = os.path.join(cfg.repo_dir, NOTIFICATION_SETTINGS_FILE)
