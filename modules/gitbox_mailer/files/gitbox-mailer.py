@@ -28,12 +28,94 @@ import io
 import re
 import copy
 import sys
+import requests
 
 PUBSUB_URL = 'http://pubsub.apache.org:2069/github'  # Subscribe to github events only
 PUBSUB_QUEUE = {}
 ROOT_DIRS = ['/x1/repos/asf', '/x1/repos/private']
 SCHEME_FILE = 'notifications.yaml'
 DEBUG = True if sys.argv[1:] else False
+FALLBACK_ADDRESS = 'team@infra.apache.org'
+
+JIRA_DEFAULT_OPTIONS = 'link label'
+JIRA_CREDENTIALS = '/x1/jirauser.txt'
+jsplit = open(JIRA_CREDENTIALS).read().strip().split(':')
+JIRA_AUTH = (jsplit[0], jsplit[1])
+JIRA_HEADERS = {
+    "Content-type": "application/json",
+    "Accept": "*/*",
+}
+
+def jira_update_ticket(ticket, txt, worklog=False):
+    """ Post JIRA comment or worklog entry """
+    where = 'comment'
+    data = {
+        'body': txt
+    }
+    if worklog:
+        where = 'worklog'
+        data = {
+            'timeSpent': "10m",
+            'comment': txt
+        }
+
+    rv = requests.post(
+        "https://issues.apache.org/jira/rest/api/latest/issue/%s/%s" % (ticket, where),
+        headers=JIRA_HEADERS,
+        auth=JIRA_AUTH,
+        json=data
+    )
+    if rv.status_code == 200 or rv.status_code == 201:
+        return "Updated JIRA Ticket %s" % ticket
+    else:
+        raise Exception(rv.text)
+
+
+def jira_remote_link(ticket, url, prno):
+    """ Post JIRA remote link to GitHub PR/Issue """
+    urlid = url.split('#')[0] # Crop out anchor
+    data = {
+        'globalId': "github=%s" % urlid,
+        'object':
+            {
+                'url': urlid,
+                'title': "GitHub Pull Request #%s" % prno,
+                'icon': {
+                    'url16x16': "https://github.com/favicon.ico"
+                }
+            }
+        }
+    rv = requests.post(
+        "https://issues.apache.org/jira/rest/api/latest/issue/%s/remotelink" % ticket,
+        headers=JIRA_HEADERS,
+        auth=JIRA_AUTH,
+        json=data
+        )
+    if rv.status_code == 200 or rv.status_code == 201:
+        return "Updated JIRA Ticket %s" % ticket
+    else:
+        return rv.txt
+
+def jira_add_label(ticket):
+    """ Add a "PR available" label to JIRA """
+    data = {
+        "update": {
+            "labels": [
+                {"add": "pull-request-available"}
+            ]
+        }
+    }
+    rv = requests.put(
+        "https://issues.apache.org/jira/rest/api/latest/issue/%s" % ticket,
+        headers=JIRA_HEADERS,
+        auth=JIRA_AUTH,
+        json=data
+    )
+    if rv.status_code == 200 or rv.status_code == 201:
+        return "Added PR label to Ticket %s\n" % ticket
+    else:
+        return rv.text
+
 
 def get_recipient(repo, itype, action):
     """ Finds the right email recipient for a repo and an action. """
@@ -51,37 +133,49 @@ def get_recipient(repo, itype, action):
             if os.path.exists(scheme_path):
                 try:
                     scheme = yaml.safe_load(open(scheme_path))
-                    break
                 except:
                     pass
 
             # Check standard git config
             cfg_path = os.path.join(repo_path, 'config')
             cfg = git.GitConfigParser(cfg_path)
-            scheme['commits'] = cfg.get('hooks.asfgit', 'recips')
+            if not 'commits' in scheme:
+                scheme['commits'] = cfg.get("hooks.asfgit", "recips", FALLBACK_ADDRESS)
             if cfg.has_option('apache', 'dev'):
-                scheme['issues'] = cfg.get('apache', 'dev')
-                scheme['pullrequests'] = cfg.get('apache', 'dev')
+                default_issue = cfg.get("apache", "dev")
+                if not 'issues' in scheme:
+                    scheme['issues'] = default_issue
+                if not 'pullrequests' in scheme:
+                    scheme['pullrequests'] = default_issue
+            if cfg.has_option('apache', 'jira'):
+                default_jira = cfg.get("apache", "jira")
+                if not 'jira_options' in scheme:
+                    scheme['jira_options'] = default_jira
+            break
 
     if scheme:
-        if itype != 'commit':
+        if itype not in ['commit', 'jira']:
             it = 'issues' if itype == 'issue' else 'pullrequests'
             if action in ['comment', 'diffcomment', 'edited', 'deleted', 'created']:
                 if ("%s_comment" % it) in scheme:
                     return scheme["%s_comment" % it]
                 elif it in scheme:
-                    return scheme[it]
+                    return scheme.get(it, FALLBACK_ADDRESS)
             elif action in ['open', 'close', 'merge']:
                 if ("%s_status" % it) in scheme:
                     return scheme["%s_status" % it]
                 elif it in scheme:
-                    return scheme[it]
-        elif 'commits' in scheme:
+                    return scheme.get(it, FALLBACK_ADDRESS)
+        elif itype == 'commit' and 'commits' in scheme:
             return scheme['commits']
+        elif itype == 'jira':
+            return scheme.get('jira_options', JIRA_DEFAULT_OPTIONS)
+    if itype == 'jira':
+        return JIRA_DEFAULT_OPTIONS
     return "dev@%s.apache.org" % project
 
 
-class event:
+class Event:
     def __init__(self, key, payload):
         self.key = key
         self.payload = payload
@@ -126,6 +220,27 @@ class event:
         template.generate(fp, self.payload)
         self.message = fp.getvalue()
 
+    def notify_jira(self):
+        try:
+            m = re.search(r"\b([A-Z0-9]+-\d+)\b", self.title)
+            if m:
+                jira_ticket = m.group(1)
+                jopts = get_recipient(self.repo, 'jira', '')
+                if 'label' in jopts:
+                    print("[INFO] Setting JIRA label for %s" % jira_ticket)
+                    if not DEBUG:
+                        jira_add_label(jira_ticket)
+                if 'link' in jopts:
+                    print("[INFO] Setting JIRA link for %s to %s" % (jira_ticket, self.link))
+                    if not DEBUG:
+                        jira_remote_link(jira_ticket, self.link, self.id)
+                if 'worklog' in jopts or 'comment' in jopts:
+                    print("[INFO] Adding comment to %s" % jira_ticket)
+                    if not DEBUG:
+                        jira_update_ticket(jira_ticket, self.message, True if 'worklog' in jopts else False)
+        except Exception as e:
+            print("[WARNING] Could not update JIRA: %s" % e)
+
     def send_email(self):
         recipient = get_recipient(self.repo, self.typeof, self.action)
         print("[INFO] Sending email to %s: %s" % (recipient, self.subject))
@@ -160,6 +275,7 @@ class event:
         try:
             self.format_message()
             self.send_email()
+            self.notify_jira()
         except Exception as e:
             print("Could not dispatch message: " + str(e))
 
@@ -196,7 +312,7 @@ def process(payload):
     if 'filename' not in payload:
         key += str(uuid.uuid4())
     if key not in PUBSUB_QUEUE:
-        PUBSUB_QUEUE[key] = event(key, payload)
+        PUBSUB_QUEUE[key] = Event(key, payload)
     else:
         PUBSUB_QUEUE[key].add(payload)
 
