@@ -37,6 +37,16 @@ SCHEME_FILE = 'notifications.yaml'
 DEBUG = True if sys.argv[1:] else False
 FALLBACK_ADDRESS = 'team@infra.apache.org'
 DEFAULT_TEMPLATE = 'email_template.ezt'
+EMAIL_SUBJECTS = {
+    'open':         "opened a new %(type)s",
+    'close':        "closed %(type)s",
+    'merge':        "merged %(type)s",
+    'comment':      "commented on %(type)s",
+    'created':      "commented on %(type)s",
+    'edited':       "edited a comment on %(type)s",
+    'deleted':      "removed a comment on %(type)s",
+    'diffcomment':  "commented on a change in %(type)s"
+}
 
 JIRA_DEFAULT_OPTIONS = 'link label'
 JIRA_CREDENTIALS = '/x1/jirauser.txt'
@@ -204,17 +214,7 @@ class Event:
         self.updated = time.time()
 
     def format_message(self, template = DEFAULT_TEMPLATE):
-        subjects = {
-            'open':         "opened a new %(type)s",
-            'close':        "closed %(type)s",
-            'merge':        "merged %(type)s",
-            'comment':      "commented on %(type)s",
-            'created':      "commented on %(type)s",
-            'edited':       "edited a comment on %(type)s",
-            'deleted':      "removed a comment on %(type)s",
-            'diffcomment':  "commented on a change in %(type)s"
-        }
-        self.payload['action_text'] = (subjects[self.action] if self.action in subjects else subjects['comment']) % self.payload
+        self.payload['action_text'] = EMAIL_SUBJECTS.get(self.action, EMAIL_SUBJECTS['comment']) % self.payload
         self.subject = "[GitHub] [%(repo)s] %(user)s %(action_text)s #%(id)i: %(title)s" % self.payload
         template = ezt.Template(template, compress_whitespace=0)
         fp = io.StringIO()
