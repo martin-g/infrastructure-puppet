@@ -45,7 +45,7 @@ EMAIL_SUBJECTS = {
     'created':      "commented on %(type)s",
     'edited':       "edited a comment on %(type)s",
     'deleted':      "removed a comment on %(type)s",
-    'diffcomment':  "commented on a change in %(type)s",
+    'diffcomment':  "commented on a change in %(type)s"
 }
 JIRA_DEFAULT_OPTIONS = 'link label'
 JIRA_CREDENTIALS = '/x1/jirauser.txt'
@@ -207,13 +207,14 @@ class Event:
         self.message = None
         self.recipient = None
         self.updated = time.time()
+        self.payload['reviews'] = None
 
         if payload.get('filename'):
             self.add(payload)
 
     def add(self, payload):
         """ Turn into a stream of comments """
-        if 'reviews' not in self.payload:
+        if not self.payload.get('reviews'):
             self.payload['reviews'] = []
         self.payload['reviews'].append(Helper(payload))
         self.updated = time.time()
@@ -277,7 +278,7 @@ class Event:
             raise Exception("Could not send email: " + str(e))
 
     def process(self):
-        print("Processing %s (%u item(s))..." % (self.key, len(self.payload.get('reviews', []))))
+        print("Processing %s (%u item(s))..." % (self.key, len(self.payload.get('reviews', []) or [])))
         try:
             self.format_message()
             self.send_email()
