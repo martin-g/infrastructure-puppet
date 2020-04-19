@@ -243,6 +243,11 @@ def main():
         # Indent comment
         fmt['text'] = "\n".join("   %s" % x for x in fmt['text'].split("\n"))
         
+        m = re.match(r"(?:incubator-)([^-]+)", repo)
+        project = "infra" # Default to infra
+        if m:
+            project = m.group(1)
+        
         # Push even to pubsub
         act = fmt.get('type', 'issue')
         if act == 'pull request':
