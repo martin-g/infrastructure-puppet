@@ -290,8 +290,7 @@ class Actor(threading.Thread):
     def run(self):
         """ Copy queue, clear it and run each item """
         while True:
-            XPQ = copy.copy(PUBSUB_QUEUE)  # Shallow copy so we don't delete during iteration...
-            for key, event_object in XPQ.items():
+            for key, event_object in PUBSUB_QUEUE.copy().items():
                 now = time.time()
                 if now - event_object.updated > 5:
                     del PUBSUB_QUEUE[key]
