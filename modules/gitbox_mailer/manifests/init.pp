@@ -57,6 +57,11 @@ class gitbox_mailer (
       owner  => $username,
       group  => $group,
       source => 'puppet:///modules/gitbox_mailer/gitbox-mailer.py';
+    '/usr/local/etc/gitbox-mailer/email_template.ezt':
+      mode   => '0644',
+      owner  => $username,
+      group  => $group,
+      source => 'puppet:///modules/gitbox_mailer/email_template.ezt';
     }
     # Set up systemd on first init
     -> file {
