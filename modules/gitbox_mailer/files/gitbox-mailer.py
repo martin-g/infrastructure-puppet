@@ -156,7 +156,7 @@ def get_recipient(repo, itype, action):
             cfg_path = os.path.join(repo_path, 'config')
             cfg = git.GitConfigParser(cfg_path)
             if not 'commits' in scheme:
-                scheme['commits'] = cfg.get("hooks.asfgit", "recips", FALLBACK_ADDRESS)
+                scheme['commits'] = cfg.get("hooks.asfgit", "recips") or FALLBACK_ADDRESS
             if cfg.has_option('apache', 'dev'):
                 default_issue = cfg.get("apache", "dev")
                 if not 'issues' in scheme:
