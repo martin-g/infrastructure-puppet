@@ -57,6 +57,9 @@ JIRA_HEADERS = {
     "Accept": "*/*",
 }
 
+RE_PROJECT = re.compile(r"(?:incubator-)?([^-]+)")
+RE_JIRA_TICKET = re.compile(r"\b([A-Z0-9]+-\d+)\b")
+
 def jira_update_ticket(ticket, txt, worklog=False):
     """ Post JIRA comment or worklog entry """
     where = 'comment'
@@ -131,7 +134,7 @@ def jira_add_label(ticket):
 def get_recipient(repo, itype, action):
     """ Finds the right email recipient for a repo and an action. """
     scheme = {}
-    m = re.match(r"(?:incubator-)?([^-]+)", repo)
+    m = RE_PROJECT.match(repo)
     if m:
         project = m.group(1)
     else:
@@ -223,7 +226,7 @@ class Event:
 
     def notify_jira(self):
         try:
-            m = re.search(r"\b([A-Z0-9]+-\d+)\b", self.title)
+            m = RE_JIRA_TICKET.search(self.title)
             if m:
                 jira_ticket = m.group(1)
                 jopts = get_recipient(self.repo, 'jira', '')
