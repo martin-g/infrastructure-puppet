@@ -299,22 +299,22 @@ class Actor(threading.Thread):
             time.sleep(10)
 
 
-def process(payload):
+def process(js):
     """ Plop the item into the queue, or (if stream of comments) append to existing queue item. """
-    action = payload.get('action', 'null')
-    user = payload.get('user', 'null')
-    type_of = payload.get('type')
-    issue_id = payload.get('id')
-    repository = payload.get('repo')
+    action = js.get('action', 'null')
+    user = js.get('user', 'null')
+    type_of = js.get('type')
+    issue_id = js.get('id')
+    repository = js.get('repo')
     key = "%s-%s-%s-%s-%s" % (action, repository, type_of, issue_id, user)
 
     # If not a file review, we don't want to fold...
-    if 'filename' not in payload:
+    if 'filename' not in js:
         key += str(uuid.uuid4())
     if key not in PUBSUB_QUEUE:
-        PUBSUB_QUEUE[key] = Event(key, payload)
+        PUBSUB_QUEUE[key] = Event(key, js)
     else:
-        PUBSUB_QUEUE[key].add(payload)
+        PUBSUB_QUEUE[key].add(js)
 
 if __name__ == '__main__':
     if DEBUG:
