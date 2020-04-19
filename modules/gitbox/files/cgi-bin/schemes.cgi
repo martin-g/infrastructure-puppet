@@ -38,6 +38,9 @@ def main():
             devmail = 'dev@%s.apache.org' % pname
             if config.has_option('apache', 'dev'):
                 devmail = config.get('apache', 'dev')
+            jira = 'link label'
+            if config.has_option('apache', 'jira'):
+                jira = config.get('apache', 'jira')
             print("Status: 200 Okay")
             print("Content-Type: text/html")
             print("")
@@ -49,10 +52,11 @@ The below YAML snippet depicts your current default settings for %s:<br/>
     <b>commits:</b>      %s
     <b>issues:</b>       %s
     <b>pullrequests:</b> %s
+    <b>jira_options:</b> %s
     </pre>
 To change them, please commit your changes to your <a href='https://s.apache.org/asfyaml'>.asf.yaml</a> file in your repository.<br/>
 Note that all changes will cause the (P)PMC to be notified, and must be made in the master/trunk branch.
-            """ % (reponame, reponame, commitmail, devmail, devmail))
+            """ % (reponame, reponame, commitmail, devmail, devmail, jira))
 
 if __name__ == '__main__':
     main()
