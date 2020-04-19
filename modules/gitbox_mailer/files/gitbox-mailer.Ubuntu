@@ -1,0 +1,12 @@
+[Unit]
+Description=GitHub PR/Issue Mailer Daemon
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/usr/local/etc/gitbox-mailer
+ExecStart=/usr/local/etc/gitbox-mailer/gitbox-mailer.py
+
+[Install]
+WantedBy=multi-user.target
