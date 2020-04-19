@@ -6,6 +6,7 @@ classes:
   - apache::mod::perl
   - gitbox
   - gitbox::roleaccount
+  - gitbox_mailer
   - gitbox_syncer
   - blocky
   - kif

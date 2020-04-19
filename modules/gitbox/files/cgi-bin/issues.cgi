@@ -24,21 +24,15 @@ import sys
 import time
 import cgi
 import netaddr
-import smtplib
 import sqlite3
 import git
 import re
 import ezt
 import StringIO
-from email.mime.text import MIMEText
 import requests
 import base64
-import email.utils
-import email.header
 
 # Define some defaults and debug vars
-DEBUG_MAIL_TO = None # "humbedooh@apache.org" # Set to a var to override mail recipients, or None to disable.
-DEFAULT_SENDMAIL = True             # Should we default to sending an email to the list? (this is very rarely no)
 DEFAULT_JIRA_ENABLED = True         # Is JIRA bridge enabled by default?
 DEFAULT_JIRA_ACTION = "comment"     # Default JIRA action (comment/worklog)
 
@@ -65,36 +59,6 @@ def getvalue(key):
         return val
     else:
         return None
-
-
-def sendEmail(rcpt, subject, message, message_id=None, reply_to_id=None):
-    if rcpt == 'dev@null':
-        return
-    sender = "GitBox <git@apache.org>"
-    if not message_id:
-        message_id = email.utils.make_msgid("gitbox")
-    reply_headers = "\nReferences: %s\nIn-Reply-To: %s" % (reply_to_id, reply_to_id) if reply_to_id else ""
-    receivers = [rcpt]
-    sub = email.header.Header(subject, 'utf-8').encode()
-    msg = """From: %s
-To: %s
-Subject: %s
-Message-ID: %s%s
-Date: %s
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8bit
-
-%s
-
-With regards,
-Apache Git Services
-""" % (sender, rcpt, sub, message_id, reply_headers, email.utils.formatdate(), message)
-    msg = msg.encode('utf-8', errors='replace')
-    try:
-        smtpObj = smtplib.SMTP("mail.apache.org:2025")
-        smtpObj.sendmail(sender, receivers, msg)
-    except smtplib.SMTPException:
-        raise Exception("Could not send email - SMTP server down or you put .incubator in the recip address, remove it!")
 
 ################################
 # Message formatting functions #
@@ -217,87 +181,6 @@ def formatMessage(fmt, template = 'template.ezt'):
         'message': body
     }
 
-def updateTicket(ticket, name, txt, worklog):
-    auth = open("/x1/jirauser.txt").read().strip()
-    auth = str(base64.encodestring(bytes(auth))).strip()
-
-    # Post comment or worklog entry!
-    headers = {"Content-type": "application/json",
-                 "Accept": "*/*",
-                 "Authorization": "Basic %s" % auth
-                 }
-    try:
-        where = 'comment'
-        data = {
-            'body': txt
-        }
-        if worklog:
-            where = 'worklog'
-            data = {
-                'timeSpent': "10m",
-                'comment': txt
-            }
-
-        rv = requests.post("https://issues.apache.org/jira/rest/api/latest/issue/%s/%s" % (ticket, where),headers=headers, json = data)
-        if rv.status_code == 200 or rv.status_code == 201:
-            return "Updated JIRA Ticket %s" % ticket
-        else:
-            return rv.text
-    except:
-        pass # Not much to do just yet
-
-def remoteLink(ticket, url, prno):
-    auth = open("/x1/jirauser.txt").read().strip()
-    auth = str(base64.encodestring(bytes(auth))).strip()
-
-    # Post comment or worklog entry!
-    headers = {"Content-type": "application/json",
-                 "Accept": "*/*",
-                 "Authorization": "Basic %s" % auth
-                 }
-    try:
-        urlid = url.split('#')[0] # Crop out anchor
-        data = {
-            'globalId': "github=%s" % urlid,
-            'object':
-                {
-                    'url': urlid,
-                    'title': "GitHub Pull Request #%s" % prno,
-                    'icon': {
-                        'url16x16': "https://github.com/favicon.ico"
-                    }
-                }
-            }
-        rv = requests.post("https://issues.apache.org/jira/rest/api/latest/issue/%s/remotelink" % ticket,headers=headers, json = data)
-        if rv.status_code == 200 or rv.status_code == 201:
-            return "Updated JIRA Ticket %s" % ticket
-        else:
-            return rv.txt
-    except:
-        pass # Not much to do just yet
-
-def addLabel(ticket):
-    auth = open("/x1/jirauser.txt").read().strip()
-    auth = str(base64.encodestring(bytes(auth))).strip()
-
-    # Post comment or worklog entry!
-    headers = {"Content-type": "application/json",
-                 "Accept": "*/*",
-                 "Authorization": "Basic %s" % auth
-                 }
-    data = {
-        "update": {
-            "labels": [
-                {"add": "pull-request-available"}
-            ]
-        }
-    }
-    rv = requests.put("https://issues.apache.org/jira/rest/api/latest/issue/%s" % ticket,headers=headers, json = data)
-    if rv.status_code == 200 or rv.status_code == 201:
-        return "Added PR label to Ticket %s\n" % ticket
-    else:
-        #sys.stderr.write(rv.text)
-        return rv.text
 
 # Main function
 def main():
@@ -320,18 +203,6 @@ def main():
         gconf = git.GitConfigParser(configpath, read_only = True)
     else:
         return "No configuration found for repository %s" % repo
-
-    # Get recipient email address for mail coms
-    m = re.match(r"(?:incubator-)([^-]+)", repo)
-    project = "infra" # Default to infra
-    if m:
-        project = m.group(1)
-    mailto = gconf.get('apache', 'dev') if gconf.has_option('apache', 'dev') else "dev@%s.apache.org" % project
-    mailto = mailto.replace(".git", "") # mitigate migration bugs for now
-    commitml = gconf.get('hooks.asfgit', 'recips') # commit ML for PR diffs    
-    # Debug override if testing
-    if DEBUG_MAIL_TO:
-        mailto = DEBUG_MAIL_TO
 
     # Now figure out what type of event we got
     fmt = None
@@ -363,10 +234,9 @@ def main():
             else:
                 fmt = ticketComment(data)
 
-    # Send email if applicable
+    # Send pubsub event
     if fmt:
         fmt['repo'] = repo
-        # EZT needs these to be defined
         for el in ['filename','diff', 'prdiff']:
             if not el in fmt:
                 fmt[el] = None
@@ -381,33 +251,7 @@ def main():
             requests.post('http://pubsub.apache.org:2069/github/%s/%s/%s.git/%s' % (act, project, repo, fmt.get('action', 'unknown')), data = json.dumps({"payload": fmt}))
         except:
             pass
-        # Go ahead and generate the template
-        email = formatMessage(fmt)
-    if email:
-        thread_id = "<%s.%s.%s.gitbox@gitbox.apache.org>" % (project, fmt['id'], fmt.get('node_id', '--'))
-        message_id = thread_id if isNew else None
-        reply_to_id = thread_id if not isNew else None
-        sendEmail(mailto, email['subject'], email['message'], message_id = message_id, reply_to_id = reply_to_id)
-    # PR Diff from fork to be sent to commit ML??
-    if fmt and fmt.get('prdiff_real'):
-        sendEmail(commitml, "[%s] Diff for: %s" % (repo, email['subject']), fmt['prdiff_real'])
-
-    # Now do JIRA if need be
-    jiraopt = gconf.get('apache', 'jira') if gconf.has_option('apache', 'jira') else 'worklog nocomment' # Default to no visible notification.
     
-    if jiraopt and fmt:
-        if 'nofollow' in jiraopt:
-            return None
-        jiramsg = formatMessage(fmt, template = 'template-jira.ezt')
-        if 'title' in fmt:
-            m = re.search(r"\b([A-Z0-9]+-\d+)\b", fmt['title'])
-            if m:
-                ticket = m.group(1)
-                worklog = True if jiraopt.find('worklog') != -1 else False
-                if not (jiraopt.find("nocomment") != -1 and isComment):
-                    remoteLink(ticket, fmt['link'], fmt['id']) # Make link to PR
-                    addLabel(ticket)
-                    return updateTicket(ticket, fmt['user'], jiramsg['message'], worklog)
     # All done!
     return None
 
