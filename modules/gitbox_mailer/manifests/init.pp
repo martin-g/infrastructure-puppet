@@ -71,7 +71,7 @@ class gitbox_mailer (
         group  => 'root',
         source => "puppet:///modules/gitbox_mailer/gitbox-mailer.${::operatingsystem}";
     }
-    -> exec { 'staged-systemd-reload':
+    -> exec { 'gitbox-mailer-systemd-reload':
       command     => 'systemctl daemon-reload',
       path        => [ '/usr/bin', '/bin', '/usr/sbin' ],
       refreshonly => true,
