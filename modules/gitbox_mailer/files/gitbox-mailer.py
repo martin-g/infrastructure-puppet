@@ -36,6 +36,7 @@ ROOT_DIRS = ['/x1/repos/asf', '/x1/repos/private']
 SCHEME_FILE = 'notifications.yaml'
 DEBUG = True if sys.argv[1:] else False
 FALLBACK_ADDRESS = 'team@infra.apache.org'
+DEFAULT_TEMPLATE = 'email_template.ezt'
 
 JIRA_DEFAULT_OPTIONS = 'link label'
 JIRA_CREDENTIALS = '/x1/jirauser.txt'
@@ -202,7 +203,7 @@ class Event:
         self.payload['reviews'].append(Helper(payload))
         self.updated = time.time()
 
-    def format_message(self, template = 'template.ezt'):
+    def format_message(self, template = DEFAULT_TEMPLATE):
         subjects = {
             'open':         "opened a new %(type)s",
             'close':        "closed %(type)s",
