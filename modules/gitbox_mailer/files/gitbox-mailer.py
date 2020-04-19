@@ -94,7 +94,7 @@ def jira_remote_link(ticket, url, prno):
     if rv.status_code == 200 or rv.status_code == 201:
         return "Updated JIRA Ticket %s" % ticket
     else:
-        return rv.txt
+        raise Exception(rv.text)
 
 def jira_add_label(ticket):
     """ Add a "PR available" label to JIRA """
@@ -114,7 +114,7 @@ def jira_add_label(ticket):
     if rv.status_code == 200 or rv.status_code == 201:
         return "Added PR label to Ticket %s\n" % ticket
     else:
-        return rv.text
+        raise Exception(rv.text)
 
 
 def get_recipient(repo, itype, action):
