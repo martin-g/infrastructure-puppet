@@ -45,7 +45,7 @@ EMAIL_SUBJECTS = {
     'created':      "commented on %(type)s",
     'edited':       "edited a comment on %(type)s",
     'deleted':      "removed a comment on %(type)s",
-    'diffcomment':  "commented on a change in %(type)s"
+    'diffcomment':  "commented on a change in %(type)s",
 }
 JIRA_DEFAULT_OPTIONS = 'link label'
 JIRA_CREDENTIALS = '/x1/jirauser.txt'
