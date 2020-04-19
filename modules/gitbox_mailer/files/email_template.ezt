@@ -9,11 +9,11 @@ File path: [reviews.filename]
 [reviews.diff]
 
 Review comment:
-    [if-any reviews.text][reviews.text][end]
+    [reviews.text]
 [end][end]
-[else][if-any text][text][end][end]
+[else][text][end]
 
-[if-any prdiff][prdiff][end]
+[prdiff]
 ----------------------------------------------------------------
 This is an automated message from the Apache Git Service.
 To respond to the message, please log on to GitHub and use the
