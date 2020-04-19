@@ -30,11 +30,11 @@ import copy
 import sys
 import requests
 
+# Defaults and settings
 PUBSUB_URL = 'http://pubsub.apache.org:2069/github'  # Subscribe to github events only
 PUBSUB_QUEUE = {}
 ROOT_DIRS = ['/x1/repos/asf', '/x1/repos/private']
 SCHEME_FILE = 'notifications.yaml'
-DEBUG = True if sys.argv[1:] else False
 FALLBACK_ADDRESS = 'team@infra.apache.org'
 DEFAULT_TEMPLATE = 'email_template.ezt'
 EMAIL_SUBJECTS = {
@@ -47,19 +47,21 @@ EMAIL_SUBJECTS = {
     'deleted':      "removed a comment on %(type)s",
     'diffcomment':  "commented on a change in %(type)s"
 }
-
 JIRA_DEFAULT_OPTIONS = 'link label'
 JIRA_CREDENTIALS = '/x1/jirauser.txt'
-jsplit = open(JIRA_CREDENTIALS).read().strip().split(':')
-JIRA_AUTH = (jsplit[0], jsplit[1])
+
+
+# Globals we figure out as we go along..
+DEBUG = True if sys.argv[1:] else False
+JIRA_AUTH = tuple(open(JIRA_CREDENTIALS).read().strip().split(':', 1))
 JIRA_HEADERS = {
     "Content-type": "application/json",
     "Accept": "*/*",
 }
-
 RE_PROJECT = re.compile(r"(?:incubator-)?([^-]+)")
 RE_JIRA_TICKET = re.compile(r"\b([A-Z0-9]+-\d+)\b")
 
+####################################################
 def jira_update_ticket(ticket, txt, worklog=False):
     """ Post JIRA comment or worklog entry """
     where = 'comment'
