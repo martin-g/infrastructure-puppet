@@ -271,7 +271,7 @@ class Event:
                 subject=self.subject,
                 message=self.message,
                 messageid=message_id,
-                headers=reply_headers
+                headers=reply_headers,
             )
         except Exception as e:
             raise Exception("Could not send email: " + str(e))
