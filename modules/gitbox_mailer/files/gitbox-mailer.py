@@ -52,7 +52,7 @@ JIRA_CREDENTIALS = '/x1/jirauser.txt'
 
 
 # Globals we figure out as we go along..
-DEBUG = True if sys.argv[1:] else False
+DEBUG = bool(sys.argv[1:]) # thus 'python3 gitbox-mailer.py debug' to set debug mode
 JIRA_AUTH = tuple(open(JIRA_CREDENTIALS).read().strip().split(':', 1))
 JIRA_HEADERS = {
     "Content-type": "application/json",
