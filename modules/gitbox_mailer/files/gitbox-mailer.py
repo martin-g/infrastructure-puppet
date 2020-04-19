@@ -192,16 +192,16 @@ def get_recipient(repo, itype, action):
 
 
 class Event:
-    def __init__(self, key, payload):
+    def __init__(self, key, data):
         self.key = key
-        self.payload = payload
-        self.user = payload.get('user')
-        self.repo = payload.get('repo')
-        self.tid = payload.get('id')
-        self.title = payload.get('title')
-        self.typeof = payload.get('type')
-        self.action = payload.get('action', 'comment')
-        self.link = payload.get('link', '')
+        self.payload = data
+        self.user = data.get('user')
+        self.repo = data.get('repo')
+        self.tid = data.get('id')
+        self.title = data.get('title')
+        self.typeof = data.get('type')
+        self.action = data.get('action', 'comment')
+        self.link = data.get('link', '')
 
         self.subject = None
         self.message = None
@@ -209,14 +209,14 @@ class Event:
         self.updated = time.time()
         self.payload['reviews'] = None
 
-        if payload.get('filename'):
-            self.add(payload)
+        if data.get('filename'):
+            self.add(data)
 
-    def add(self, payload):
+    def add(self, data):
         """ Turn into a stream of comments """
         if not self.payload.get('reviews'):
             self.payload['reviews'] = []
-        self.payload['reviews'].append(Helper(payload))
+        self.payload['reviews'].append(Helper(data))
         self.updated = time.time()
 
     def format_message(self, template = DEFAULT_TEMPLATE):
@@ -226,7 +226,8 @@ class Event:
         fp = io.StringIO()
         template.generate(fp, self.payload)
         self.message = fp.getvalue()
-
+        if DEBUG:
+            print(self.message)
     def notify_jira(self):
         try:
             m = RE_JIRA_TICKET.search(self.title)
@@ -278,7 +279,8 @@ class Event:
             raise Exception("Could not send email: " + str(e))
 
     def process(self):
-        print("Processing %s (%u item(s))..." % (self.key, len(self.payload.get('reviews', []) or [])))
+        no_children = len(self.payload.get('reviews', []) or [])
+        print("Processing %s (%u sub-item(s))..." % (self.key, no_children))
         try:
             self.format_message()
             self.send_email()
