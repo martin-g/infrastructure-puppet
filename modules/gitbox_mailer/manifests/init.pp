@@ -30,12 +30,6 @@ class gitbox_mailer (
         ensure   => present;
     }
   }
-  if !defined(Python::Pip['pygit']) {
-    python::pip {
-      'pygit' :
-        ensure   => present;
-    }
-  }
 
   file {
     '/usr/local/etc/gitbox-mailer':
