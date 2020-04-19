@@ -1,0 +1,23 @@
+[user] [action_text] #[id]:
+URL: [link]
+
+
+[if-any reviews][for reviews][if-any reviews.filename]
+##########
+File path: [reviews.filename]
+##########
+[reviews.diff]
+
+Review comment:
+    [if-any reviews.text][reviews.text][end]
+[end][end]
+[else][if-any text][text][end][end]
+
+[if-any prdiff][prdiff][end]
+----------------------------------------------------------------
+This is an automated message from the Apache Git Service.
+To respond to the message, please log on to GitHub and use the
+URL above to go to the specific comment.
+
+For queries about this service, please contact Infrastructure at:
+users@infra.apache.org
