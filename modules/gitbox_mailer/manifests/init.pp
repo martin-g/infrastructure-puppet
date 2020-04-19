@@ -15,28 +15,24 @@ class gitbox_mailer (
   if !defined(Python::Pip['asfpy']) {
     python::pip {
       'asfpy' :
-        provider => 'pip3',
         ensure   => present;
     }
   }
   if !defined(Python::Pip['pyyaml']) {
     python::pip {
       'pyyaml' :
-        provider => 'pip3',
         ensure   => present;
     }
   }
   if !defined(Python::Pip['ezt']) {
     python::pip {
       'ezt' :
-        provider => 'pip3',
         ensure   => present;
     }
   }
   if !defined(Python::Pip['pygit']) {
     python::pip {
       'pygit' :
-        provider => 'pip3',
         ensure   => present;
     }
   }
