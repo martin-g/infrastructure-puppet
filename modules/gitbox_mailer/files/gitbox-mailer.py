@@ -205,7 +205,6 @@ class Event:
 
         self.subject = None
         self.message = None
-        self.recipient = None
         self.updated = time.time()
         self.payload['reviews'] = None
 
