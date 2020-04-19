@@ -208,7 +208,7 @@ class Event:
         self.recipient = None
         self.updated = time.time()
 
-        if 'filename' in payload:
+        if payload.get('filename'):
             self.add(payload)
 
     def add(self, payload):
