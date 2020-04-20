@@ -107,6 +107,10 @@ subject_fmt = _git_config("hooks.asfgit.subject-fmt", DEFAULT_SUBJECT)
 max_size = int(_git_config("hooks.asfgit.max-size"))
 max_emails = int(_git_config("hooks.asfgit.max-emails"))
 
+# No diffs for wiki updates, please.
+if repo_name.endswith('.wiki'):
+    sys.exit(0)
+
 # END ASF PART
 
 __version__ = '1.5.dev'
