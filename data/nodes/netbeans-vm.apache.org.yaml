@@ -250,13 +250,13 @@ vhosts_asf::vhosts::vhosts:
   synergy-netbeans-apache-org:
     servername: 'synergy.netbeans.apache.org'
     port: 80
-    docroot:  '/var/html/synergy/client/app'
+    docroot:  '/var/www/html/synergy/client/app'
     access_log_format: 'combined'
     access_log_file: 'synergy.netbeans.apache.org.log'
     error_log_file: 'synergy.netbeans.apache.org_error.log'
     directories:
       -
-        path: '/var/html/synergy/client/app'
+        path: '/var/www/html/synergy/client/app'
         options:
           - 'FollowSymLinks'
           - 'MultiViews'
@@ -275,13 +275,13 @@ vhosts_asf::vhosts::vhosts:
     ssl_key:  '/etc/letsencrypt/live/synergy.netbeans.apache.org/privkey.pem'
     ssl_chain: '/etc/letsencrypt/live/synergy.netbeans.apache.org/chain.pem'
     ssl_proxyengine: true
-    docroot: '/var/html/synergy/client/app'
+    docroot: '/var/www/html/synergy/client/app'
     access_log_format: 'combined'
     access_log_file: 'synergy.netbeans.apache.org.log'
     error_log_file: 'synergy.netbeans.apache.org_error.log'
     directories:
       -
-        path: '/var/html/synergy/client/app'
+        path: '/var/www/html/synergy/client/app'
         options:
           - 'FollowSymLinks'
           - 'MultiViews'
