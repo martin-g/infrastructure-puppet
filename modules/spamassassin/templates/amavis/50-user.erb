@@ -11,7 +11,7 @@ use strict;
 $myhostname = '<%= @fqdn %>';
 @local_domains_acl = qw(.);
 $inet_socket_bind = '<%= @ipaddress %>';
-@inet_acl = qw(10.40.0.8); # IP Address of the haproxy node.
+@inet_acl = qw(10.40.0.8 10.40.0.30); # IP Address of the haproxy nodes.
 
 $log_level = 1;
 
