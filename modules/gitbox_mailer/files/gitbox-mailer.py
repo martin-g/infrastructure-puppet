@@ -240,7 +240,7 @@ class Event:
                 if 'link' in jopts:
                     print("[INFO] Setting JIRA link for %s to %s" % (jira_ticket, self.link))
                     if not DEBUG:
-                        jira_remote_link(jira_ticket, self.link, self.id)
+                        jira_remote_link(jira_ticket, self.link, self.tid)
                 if 'label' in jopts:
                     print("[INFO] Setting JIRA label for %s" % jira_ticket)
                     if not DEBUG:
