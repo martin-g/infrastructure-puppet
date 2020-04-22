@@ -233,18 +233,18 @@ class Event:
             if m:
                 jira_ticket = m.group(1)
                 jopts = get_recipient(self.repo, 'jira', '')
-                if 'label' in jopts:
-                    print("[INFO] Setting JIRA label for %s" % jira_ticket)
-                    if not DEBUG:
-                        jira_add_label(jira_ticket)
-                if 'link' in jopts:
-                    print("[INFO] Setting JIRA link for %s to %s" % (jira_ticket, self.link))
-                    if not DEBUG:
-                        jira_remote_link(jira_ticket, self.link, self.id)
                 if 'worklog' in jopts or 'comment' in jopts:
                     print("[INFO] Adding comment to %s" % jira_ticket)
                     if not DEBUG:
                         jira_update_ticket(jira_ticket, self.message, True if 'worklog' in jopts else False)
+                if 'link' in jopts:
+                    print("[INFO] Setting JIRA link for %s to %s" % (jira_ticket, self.link))
+                    if not DEBUG:
+                        jira_remote_link(jira_ticket, self.link, self.id)
+                if 'label' in jopts:
+                    print("[INFO] Setting JIRA label for %s" % jira_ticket)
+                    if not DEBUG:
+                        jira_add_label(jira_ticket)
         except Exception as e:
             print("[WARNING] Could not update JIRA: %s" % e)
 
