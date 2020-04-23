@@ -64,14 +64,19 @@ def getvalue(key):
 # Message formatting functions #
 ################################
 
+def get_type(payload):
+    if 'pull_request' in payload:
+        return 'pull request'
+    if 'issue' in payload and '/pull/' in payload['issue']['html_url']:
+        return 'pull request'
+    return 'issue'
+
 def issueOpened(payload):
     fmt = {}
     obj = payload['pull_request'] if 'pull_request' in payload else payload['issue']
     fmt['user'] = obj['user']['login']
     # PR or issue??
-    fmt['type'] = 'issue'
-    if 'pull_request' in payload:
-        fmt['type'] = 'pull request'
+    fmt['type'] = get_type(payload)
     fmt['node_id'] = obj['node_id'] # Stable global issue/pr id
     fmt['id'] = obj['number']
     fmt['text'] = obj['body']
@@ -85,9 +90,7 @@ def issueClosed(payload, ml = "foo@bar"):
     obj = payload['pull_request'] if 'pull_request' in payload else payload['issue']
     fmt['user'] = payload['sender']['login'] if 'sender' in payload else obj['user']['login']
     # PR or issue??
-    fmt['type'] = 'issue'
-    if 'pull_request' in payload:
-        fmt['type'] = 'pull request'
+    fmt['type'] = get_type(payload)
     fmt['id'] = obj['number']
     fmt['node_id'] = obj['node_id']
     fmt['text'] = "" # empty line when closing, so as to not confuse
@@ -126,9 +129,7 @@ def ticketComment(payload):
     obj = payload['pull_request'] if 'pull_request' in payload else payload['issue']
     comment = payload['comment']
     # PR or issue??
-    fmt['type'] = 'issue'
-    if 'pull_request' in payload:
-        fmt['type'] = 'pull request'
+    fmt['type'] = get_type(payload)
     # This is different from open/close payloads!
     fmt['user'] = comment['user']['login']
     fmt['id'] = obj['number']
@@ -145,9 +146,7 @@ def reviewComment(payload):
     obj = payload['pull_request'] if 'pull_request' in payload else payload['issue']
     comment = payload['comment']
     # PR or issue??
-    fmt['type'] = 'issue'
-    if 'pull_request' in payload:
-        fmt['type'] = 'pull request'
+    fmt['type'] = get_type(payload)
     fmt['user'] = comment['user']['login']
     fmt['id'] = obj['number']
     fmt['node_id'] = obj['node_id']
