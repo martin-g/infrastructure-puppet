@@ -139,11 +139,6 @@ class jenkins_slave_windows (
     onlyif   => "if ((Get-Item F:\\tools_zips).LastWriteTime -lt (Get-Date).AddMinutes(-60)) { exit 1;}  else { exit 0; }",
     provider => powershell,
   }
-  exec { 'create symlink for JDK1.7':
-    command  => "cmd /c rmdir F:\\jenkins\\tools\\java\\latest1.7 \"&\" mklink /d F:\\jenkins\\tools\\java\\latest1.7 F:\\jenkins\\tools\\java\\jdk1.7.0_79-unlimited-security",# lint:ignore:140chars
-    onlyif   => "if ((Get-Item F:\\tools_zips).LastWriteTime -lt (Get-Date).AddMinutes(-60)) { exit 1;}  else { exit 0; }",
-    provider => powershell,
-  }
   exec { 'create symlink for JDK1.6':
     command  => "cmd /c rmdir F:\\jenkins\\tools\\java\\latest1.6 \"&\" mklink /d F:\\jenkins\\tools\\java\\latest1.6 F:\\jenkins\\tools\\java\\jdk1.6.0_30",# lint:ignore:140chars
     onlyif   => "if ((Get-Item F:\\tools_zips).LastWriteTime -lt (Get-Date).AddMinutes(-60)) { exit 1;}  else { exit 0; }",
