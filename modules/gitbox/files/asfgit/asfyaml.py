@@ -36,7 +36,7 @@ def jenkins(cfg, yml):
     
     # GitHub PR Builder Whitelist for known (safe) contributors
     ref = yml.get('refname', 'master').replace('refs/heads/', '')
-    if ref == 'master' or ref == 'trunk:
+    if ref == 'master' or ref == 'trunk':
         ghprb_whitelist = yml.get('github_whitelist')
         if ghprb_whitelist and type(ghprb_whitelist) is list:
             if len(ghprb_whitelist) > 10:
