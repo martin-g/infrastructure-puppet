@@ -32,9 +32,8 @@ import StringIO
 import requests
 import base64
 
-# Define some defaults and debug vars
-DEFAULT_JIRA_ENABLED = True         # Is JIRA bridge enabled by default?
-DEFAULT_JIRA_ACTION = "comment"     # Default JIRA action (comment/worklog)
+# Define some defaults
+REPO_PATHS = ['/x1/repos/asf', '/x1/repos/private', '/x1/repos/svn']
 
 # CGI interface
 xform = cgi.FieldStorage();
@@ -188,21 +187,19 @@ def main():
     data = json.loads(jsin)
 
     # Now check if this repo is hosted on GitBox (if not, abort):
+    repopath = None
     if 'repository' in data:
         repo = data['repository']['name']
-        repopath = "/x1/repos/asf/%s.git" % repo
-    else:
+        for rpath in REPO_PATHS:
+            xrepopath = "%s/%s.git" % (rpath, repo)
+            if os.path.exists(xrepopath):
+                repopath = xrepopath
+                break
+    if not repopath:
         return None
     if not os.path.exists(repopath):
         return None
-
-    # Get configuration options for the repo
-    configpath = os.path.join(repopath, "config")
-    if os.path.exists(configpath):
-        gconf = git.GitConfigParser(configpath, read_only = True)
-    else:
-        return "No configuration found for repository %s" % repo
-
+    
     # Now figure out what type of event we got
     fmt = None
     email = None
