@@ -33,7 +33,7 @@ import requests
 # Defaults and settings
 PUBSUB_URL = 'http://pubsub.apache.org:2069/github'  # Subscribe to github events only
 PUBSUB_QUEUE = {}
-ROOT_DIRS = ['/x1/repos/asf', '/x1/repos/private']
+ROOT_DIRS = ['/x1/repos/asf', '/x1/repos/private', '/x1/repos/svn']
 SCHEME_FILE = 'notifications.yaml'
 FALLBACK_ADDRESS = 'team@infra.apache.org'
 DEFAULT_TEMPLATE = 'email_template.ezt'
