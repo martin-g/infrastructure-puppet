@@ -37,6 +37,15 @@ class wicket_pvm_asf (
       require => Package['docker-engine'],
       notify  => Service['docker-wicket-demo-8'],
   }
+# for wicket-9
+  exec {
+    'download-wicket-docker-9':
+      command => '/usr/bin/docker pull apache-docker-wicket-docker.bintray.io/wicket-examples:LATEST-9',
+      timeout => 1200,
+      require => Package['docker-engine'],
+      notify  => Service['docker-wicket-demo-9'],
+  }
+
 
   docker::run { 'wicket-demo-6':
     image            => 'apache-docker-wicket-docker.bintray.io/wicket-examples:LATEST-6',
@@ -64,6 +73,14 @@ class wicket_pvm_asf (
     pull_on_start    => true,
     extra_parameters => [ '--restart=always' ],
   }
-
+  
+  docker::run { 'wicket-demo-9':
+    image            => 'apache-docker-wicket-docker.bintray.io/wicket-examples:LATEST-9',
+    ports            => ['8089:8080'],
+    restart_service  => true,
+    privileged       => false,
+    pull_on_start    => true,
+    extra_parameters => [ '--restart=always' ],
+  }
 }
 
