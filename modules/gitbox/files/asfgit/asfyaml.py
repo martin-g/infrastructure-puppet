@@ -310,7 +310,10 @@ def setProtectedBranchRequiredSignature (GH_TOKEN, repo_name, pb_branch, require
             )
         )
 
-    print("GitHub Protected Branches has set requires signature setting on branch '%s' to '%s'" % (pb_branch, required_signatures))
+    title = "Protected Branches"
+    message = "GitHub Protected Branches has set requires signature setting on branch '%s' to '%s'" % (pb_branch, required_signatures)
+    print(message)
+    notifiyPrivateMailingList(title, message)
 
     return response
 
