@@ -242,8 +242,8 @@ def getEnabledProtectedBranchList (GH_TOKEN, repo_name, url, isLast):
 
     return branchCollection
 
-def setProtectedBranch (GH_TOKEN, repo_name, branch, required_status_checks, required_pull_request_reviews):
-    REQ_URL = GH_BRANCH_PROTECTION_URL_TPL % (repo_name, branch, GH_TOKEN)
+def setProtectedBranch (GH_TOKEN, cfg, branch, required_status_checks, required_pull_request_reviews):
+    REQ_URL = GH_BRANCH_PROTECTION_URL_TPL % (cfg.repo_name, branch, GH_TOKEN)
     response = requests.put(REQ_URL, headers = {'Accept': GH_BRANCH_PROTECTION_URL_ACCEPT}, json = {
         'enforce_admins': None,
         'restrictions': None,
@@ -263,12 +263,12 @@ def setProtectedBranch (GH_TOKEN, repo_name, branch, required_status_checks, req
     title = "Protected Branches"
     message = "GitHub Protected Branches has been enabled on branch=%s" % (pb_branch)
     print(message)
-    notifiyPrivateMailingList(title, message)
+    notifiyPrivateMailingList(cfg, title, message)
 
     return response
 
-def removeProtectedBranch (GH_TOKEN, repo_name, branch):
-    REQ_URL = GH_BRANCH_PROTECTION_URL_TPL % (repo_name, branch, GH_TOKEN)
+def removeProtectedBranch (GH_TOKEN, cfg, branch):
+    REQ_URL = GH_BRANCH_PROTECTION_URL_TPL % (cfg.repo_name, branch, GH_TOKEN)
     response = requests.delete(REQ_URL)
     json = response.json()
 
@@ -283,12 +283,12 @@ def removeProtectedBranch (GH_TOKEN, repo_name, branch):
     title = "Protected Branches"
     message = "GitHub Protected Branches has been be removed from branch=%s" % (branch)
     print(message)
-    notifiyPrivateMailingList(title, message)
+    notifiyPrivateMailingList(cfg, title, message)
 
     return response
 
-def setProtectedBranchRequiredSignature (GH_TOKEN, repo_name, pb_branch, required_signatures):
-    REQ_URL = 'https://api.github.com/repos/apache/%s/branches/%s/protection/required_signatures?access_token=%s' % (repo_name, pb_branch, GH_TOKEN)
+def setProtectedBranchRequiredSignature (GH_TOKEN, cfg, pb_branch, required_signatures):
+    REQ_URL = 'https://api.github.com/repos/apache/%s/branches/%s/protection/required_signatures?access_token=%s' % (cfg.repo_name, pb_branch, GH_TOKEN)
     ACCEPT_HEADER = 'application/vnd.github.zzzax-preview+json'
 
     if type(required_signatures) is not bool:
@@ -313,7 +313,7 @@ def setProtectedBranchRequiredSignature (GH_TOKEN, repo_name, pb_branch, require
     title = "Protected Branches"
     message = "GitHub Protected Branches has set requires signature setting on branch '%s' to '%s'" % (pb_branch, required_signatures)
     print(message)
-    notifiyPrivateMailingList(title, message)
+    notifiyPrivateMailingList(cfg, title, message)
 
     return response
 
@@ -356,7 +356,12 @@ def formatProtectedBranchRequiredPullRequestReview(required_pull_request_reviews
 
     return required_pull_request_reviews
 
-def notifiyPrivateMailingList(title, body):
+def notifiyPrivateMailingList(cfg, title, body):
+    # infer project name
+    m = re.match(r"(?:incubator-)?([^-.]+)", cfg.repo_name)
+    pname = m.group(1)
+    pname = WSMAP.get(pname, pname)
+
     # Tell project what happened, on private@
     message = "The following changes were applied to %s by %s.\n\n%s\n\nWith regards,\nASF Infra.\n" % (cfg.repo_name, cfg.committer, body)
     subject = "%s for %s.git has been updated" % (title, cfg.repo_name)
@@ -458,7 +463,7 @@ def github(cfg, yml):
                 # GH API Calls to add/update
                 setProtectedBranch(
                     GH_TOKEN,
-                    cfg.repo_name,
+                    cfg,
                     pb_branch,
                     required_status_checks,
                     required_pull_request_reviews
@@ -466,7 +471,7 @@ def github(cfg, yml):
 
                 setProtectedBranchRequiredSignature(
                     GH_TOKEN,
-                    cfg.repo_name,
+                    cfg,
                     pb_branch,
                     required_signatures
                 )
@@ -474,7 +479,7 @@ def github(cfg, yml):
         # Here is where the remaining branches as considered invalid/old branches with protection and will be removed.
         # The cleanup process
         for branch_to_disable_protection in enabledProtectedBranches:
-            removeProtectedBranch(GH_TOKEN, cfg.repo_name, branch_to_disable_protection)
+            removeProtectedBranch(GH_TOKEN, cfg, branch_to_disable_protection)
 
         # GitHub Pages?
         if ghp_branch:
