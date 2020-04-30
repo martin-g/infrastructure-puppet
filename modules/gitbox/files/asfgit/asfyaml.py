@@ -260,7 +260,10 @@ def setProtectedBranch (GH_TOKEN, repo_name, branch, required_status_checks, req
             )
         )
 
-    print("GitHub Protected Branches has been enabled on branch=%s" % (pb_branch))
+    title = "Protected Branches"
+    message = "GitHub Protected Branches has been enabled on branch=%s" % (pb_branch)
+    print(message)
+    notifiyPrivateMailingList(title, message)
 
     return response
 
@@ -277,10 +280,12 @@ def removeProtectedBranch (GH_TOKEN, repo_name, branch):
             )
         )
 
-    print("GitHub Protected Branches has been be removed from branch=%s" % (branch))
+    title = "Protected Branches"
+    message = "GitHub Protected Branches has been be removed from branch=%s" % (branch)
+    print(message)
+    notifiyPrivateMailingList(title, message)
 
     return response
-
 
 def setProtectedBranchRequiredSignature (GH_TOKEN, repo_name, pb_branch, required_signatures):
     REQ_URL = 'https://api.github.com/repos/apache/%s/branches/%s/protection/required_signatures?access_token=%s' % (repo_name, pb_branch, GH_TOKEN)
@@ -347,6 +352,16 @@ def formatProtectedBranchRequiredPullRequestReview(required_pull_request_reviews
         required_pull_request_reviews = None
 
     return required_pull_request_reviews
+
+def notifiyPrivateMailingList(title, body):
+    # Tell project what happened, on private@
+    message = "The following changes were applied to %s by %s.\n\n%s\n\nWith regards,\nASF Infra.\n" % (cfg.repo_name, cfg.committer, body)
+    subject = "%s for %s.git has been updated" % (title, cfg.repo_name)
+    asfpy.messaging.mail(
+        sender='GitBox <gitbox@apache.org>',
+        recipients=['private@%s.apache.org' % pname],
+        subject=subject,
+        message=message)
 
 def github(cfg, yml):
     """ GitHub settings updated. Can set up description, web site and topics """
