@@ -20,7 +20,7 @@ vhosts_asf::vhosts::vhosts:
     serveraliases:
       - 'www.examples6x.wicket.apache.org'
     port: 80
-    ssl: true
+    ssl: false
     docroot: '/var/www'
     error_log_file: 'examples6x_error.log'
     custom_fragment: |
@@ -33,7 +33,7 @@ vhosts_asf::vhosts::vhosts:
     serveraliases:
       - 'www.examples7x.wicket.apache.org'
     port: 80
-    ssl: true
+    ssl: false
     docroot: '/var/www'
     error_log_file: 'examples7x_error.log'
     custom_fragment: |
@@ -46,7 +46,7 @@ vhosts_asf::vhosts::vhosts:
     serveraliases:
       - 'www.examples8x.wicket.apache.org'
     port: 80
-    ssl: true
+    ssl: false
     docroot: '/var/www'
     error_log_file: 'examples8x_error.log'
     custom_fragment: |
@@ -65,7 +65,7 @@ vhosts_asf::vhosts::vhosts:
     serveraliases:
       - 'www.examples9x.wicket.apache.org'
     port: 80
-    ssl: true
+    ssl: false
     docroot: '/var/www'
     error_log_file: 'examples9x_error.log'
     custom_fragment: |
