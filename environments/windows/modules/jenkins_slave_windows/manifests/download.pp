@@ -33,7 +33,7 @@ class jenkins_slave_windows::download (
   #### Download flashplayer from Bintray. Needed for FlexJS ####
   download_file { 'Download flashplayer from bintray' :
     url                   => 'http://apache.bintray.com/WindowsPackages/flashplayer_22_sa_debug.exe',
-    destination_directory => 'C:\Program Files (x86)\Adobe',
+    destination_directory => '"C:\Program Files (x86)\Adobe"',
   }
   #### Download Git from Bintray
   download_file { 'Download Git from bintray' :

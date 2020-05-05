@@ -197,7 +197,7 @@ class jenkins_slave_windows (
   }
   
   #check to see if JNLP agent is connected to jenkins02, if not, start it up
-  exec {
+  exec { 'Auto start agent'
     command  => "start-process F:\\jenkins\\jenkins-slave\\start-jenkins.bat",
     onlyif   => "if (!(Get-NetTCPConnection -RemotePort 2014 -ErrorAction SilentlyContinue)) { exit 0; }",
     provider => powershell,
