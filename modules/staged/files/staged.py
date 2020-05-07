@@ -26,7 +26,7 @@ def checkout_git_repo(path, source, branch):
         subprocess.check_output((GIT_CMD, "clone", "-b", branch, "--single-branch", source, path))
         syslog.syslog(syslog.LOG_INFO, "Checkout worked!")
     except subprocess.CalledProcessError as e:
-        syslog.syslog(syslog.LOG_WARN, "Could not check out %s: %s" % (source, e.output))
+        syslog.syslog(syslog.LOG_WARNING, "Could not check out %s: %s" % (source, e.output))
     
 
 def deploy_site(deploydir, source, branch, committer):
@@ -34,16 +34,16 @@ def deploy_site(deploydir, source, branch, committer):
     
     # Pre-validation:
     if deploydir == 'www.apache.org':
-        syslog.syslog(syslog.LOG_WARN, "Not going to touch www.a.o, nope!!" % deploydir)
+        syslog.syslog(syslog.LOG_WARNING, "Not going to touch www.a.o, nope!!" % deploydir)
         return
-    if (not re.match(r"^[-a-z0-9.]+$", deploydir.replace('.apache.org', ''))) or re.search(r"\.\.", deploydir):
-        syslog.syslog(syslog.LOG_WARN, "Invalid deployment dir, %s!" % deploydir)
+    if (not re.match(r"^[-a-z0-9/.]+$", deploydir.replace('.apache.org', ''))) or re.search(r"\.\.", deploydir):
+        syslog.syslog(syslog.LOG_WARNING, "Invalid deployment dir, %s!" % deploydir)
         return
     if not source.startswith('https://gitbox.apache.org/repos/asf/'):
-        syslog.syslog(syslog.LOG_WARN, "Invalid source URL, %s!" % source)
+        syslog.syslog(syslog.LOG_WARNING, "Invalid source URL, %s!" % source)
         return
     if not branch:
-        syslog.syslog(syslog.LOG_WARN, "Invalid branch, %s!" % branch)
+        syslog.syslog(syslog.LOG_WARNING, "Invalid branch, %s!" % branch)
         return
     
     # First check if staging dir is already being used.
@@ -154,9 +154,9 @@ def listen():
                             deploydir = obj[what].get('hostname')
                     
                     if (deploydir and source and branch):
-                        if subdir and re.match(r"^[-_a-zA-Z0-9/]+$", subdir):
-                            deploydir = os.path.join(deploydir, subdir)
+                        if subdir and re.match(r"^[-_a-zA-Z0-9/]+$", subdir):                            
                             syslog.syslog(syslog.LOG_INFO, "Extending deployment dir %s with subdir %s" % (deploydir, subdir))
+                            deploydir = os.path.join(deploydir, subdir)
                         syslog.syslog(syslog.LOG_INFO, "Found deploy delivery for %s, deploying as %s" % (project, deploydir))
                         PUBSUB_QUEUE[deploydir] = [source, branch, committer]
                     
