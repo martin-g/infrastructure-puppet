@@ -49,7 +49,7 @@ EMAIL_SUBJECTS = {
 }
 JIRA_DEFAULT_OPTIONS = 'link label'
 JIRA_CREDENTIALS = '/x1/jirauser.txt'
-
+LAST_CALL = int(time.time())
 
 # Globals we figure out as we go along..
 DEBUG = bool(sys.argv[1:]) # thus 'python3 gitbox-mailer.py debug' to set debug mode
@@ -278,6 +278,7 @@ class Event:
             raise Exception("Could not send email: " + str(e))
 
     def process(self):
+        global LAST_CALL
         no_children = len(self.payload.get('reviews', []) or [])
         print("Processing %s (%u sub-item(s))..." % (self.key, no_children))
         try:
@@ -286,6 +287,13 @@ class Event:
             self.notify_jira()
         except Exception as e:
             print("Could not dispatch message: " + str(e))
+        try:
+            LAST_CALL = int(time.time())
+            with open("epoch.dat", "w") as f:
+                f.write(str(LAST_CALL))
+                f.close()
+        except:
+            pass
 
 class Helper(object):
   def __init__(self, xhash):
@@ -326,7 +334,11 @@ def process(js):
 if __name__ == '__main__':
     if DEBUG:
         print("[INFO] Debug mode enabled, no emails will be sent!")
+    try:
+        LAST_CALL = int(open("epoch.dat").read())
+    except:
+        pass
     mail_actor = Actor()
     mail_actor.start()
     pubsub = asfpy.pubsub.Listener(PUBSUB_URL)
-    pubsub.attach(process)
+    pubsub.attach(process, since = LAST_CALL)
