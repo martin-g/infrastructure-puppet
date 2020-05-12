@@ -6,6 +6,7 @@ class gitbox_mailer (
   $service_ensure = 'running',
   $username       = 'root',
   $group          = 'root',
+  $statsurl       = '',
 )
 {
 
@@ -71,5 +72,11 @@ class gitbox_mailer (
         subscribe => [
           File['/usr/local/etc/gitbox-mailer/gitbox-mailer.py']
         ]
+    }
+    cron { 'fetch_lists':
+      ensure  => present,
+      command => "curl $statsurl > /x1/gitbox/mailinglists.json 2>&1'",
+      user    => root,
+      minute  => '*/10'
     }
 }
