@@ -19,6 +19,7 @@ WSMAP = {
 
 # Notification scheme setup
 NOTIFICATION_SETTINGS_FILE = 'notifications.yaml'
+VALID_LISTS_FILE = '/x1/gitbox/mailinglists.json'
 VALID_NOTIFICATION_SCHEMES = [
         'commits',
         'issues',
@@ -436,6 +437,9 @@ def notifications(cfg, yml):
         print("[NOTICE] Notification scheme settings can only be applied to the master or trunk branch.")
         return
 
+    # Grab list of valid mailing lists
+    valid_lists = json.loads(open(VALID_LISTS_FILE).read())
+    
     # infer project name
     m = re.match(r"(?:incubator-)?([^-.]+)", cfg.repo_name)
     pname = m.group(1)
@@ -456,7 +460,7 @@ def notifications(cfg, yml):
                 or not (
                     v.endswith('@%s.apache.org' % pname) or
                     v.endswith('@%s.incubator.apache.org' % pname)
-                ):
+                ) or v not in valid_lists:
                 raise Exception("Invalid notification target '%s'. Must be a valid @%s.apache.org list!" % (v, pname))
 
     # All seems kosher, update settings if need be
