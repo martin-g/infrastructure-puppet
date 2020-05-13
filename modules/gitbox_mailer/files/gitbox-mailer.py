@@ -310,7 +310,10 @@ class Actor(threading.Thread):
                 now = time.time()
                 if now - event_object.updated > 5:
                     del PUBSUB_QUEUE[key]
-                    event_object.process()
+                    try:
+                        event_object.process()
+                    except Exception as e:
+                        print("[WARNING] Could not process payload: %s" % e)
             time.sleep(10)
 
 
