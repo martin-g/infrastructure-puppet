@@ -2247,12 +2247,12 @@ vhosts_asf::vhosts::vhosts:
     error_log_file: '/x1/logs/errorlog.log'
     custom_fragment: |
       # uimaFIT: Redirect any access to documentation of old versions to the latest documentation
-      RedirectMatch permanent ^/d/uimafit-2.*$ /d/uimafit-v2-current
-      RedirectMatch permanent ^/d/uimafit-3.*$ /d/uimafit-current
+      RedirectMatch permanent ^/d/uimafit-2.*$ /uimafit.html#Documentation
+      RedirectMatch permanent ^/d/uimafit-3.*$ /uimafit.html#Documentation
 
       # UIMA Ruta: Redirect any access to documentation of old versions to the latest documentation
-      RedirectMatch permanent ^/d/ruta-2.*$ /d/ruta-v2-current
-      RedirectMatch permanent ^/d/ruta-3.*$ /d/ruta-current
+      RedirectMatch permanent ^/d/ruta-2.*$ /ruta.html#Documentation
+      RedirectMatch permanent ^/d/ruta-3.*$ /ruta.html#Documentation
 
       RewriteEngine On
 
