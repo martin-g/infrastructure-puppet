@@ -16,6 +16,12 @@ classes:
   - vhosts_asf::vhosts
   - webstats
 
+backuppc::client::backup_files_exclude:
+  - /proc
+  - /sys
+  - /dev
+  - /x1
+
 base::basepackages:
   - 'lua5.2'
   - 'liblua5.2-dev'
