@@ -14,6 +14,12 @@ classes:
   - vhosts_asf::modules
   - vhosts_asf::vhosts
 
+backuppc::client::backup_files_exclude:
+  - /proc
+  - /sys
+  - /dev
+  - /x1
+
 vhosts_asf::modules::modules:
   allowmethods:
     name: 'allowmethods'
