@@ -8,7 +8,6 @@ classes:
   - rsync_asf
   - stunnel_asf
   - svnwcsub
-  - svngit2jira
 
 rsync_asf::cron_hour: 20
 rsync_asf::cron_minute: 07
