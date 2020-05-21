@@ -19,17 +19,8 @@ classes:
 rsync_asf::cron_hour: 13
 rsync_asf::cron_minute: 55
 
-rsync_asf::fslist:
-  - /x1/nexus-work
-
 rsync_asf::excludelist:
-  - x1/nexus-work/indexer
-  - x1/nexus-work/indexer-pro
-  - x1/nexus-work/newrelic-old
-  - x1/nexus-work/timeline-bak
-  - x1/nexus-work/tmp
-  - x1/nexus-work/trash
-  - x1/nexus-work/timeline/index
+  - x1
 
 apache::default_ssl_cert:  '/etc/ssl/certs/wildcard.apache.org.crt'
 apache::default_ssl_chain: '/etc/ssl/certs/wildcard.apache.org.chain'
