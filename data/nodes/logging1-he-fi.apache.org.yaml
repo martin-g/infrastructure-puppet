@@ -21,6 +21,7 @@ backuppc::client::backup_files_exclude:
   - /sys
   - /dev
   - /x1
+  - /var/log/elasticsearch
 
 base::basepackages:
   - 'lua5.2'

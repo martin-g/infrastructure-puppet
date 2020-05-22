@@ -19,6 +19,7 @@ backuppc::client::backup_files_exclude:
   - /sys
   - /dev
   - /x1
+  - /var/log/elasticsearch
 
 vhosts_asf::modules::modules:
   allowmethods:
