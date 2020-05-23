@@ -32,6 +32,7 @@ backuppc::client::backup_files_exclude:
   - /run
   - /var/lib/lxcfs
 backuppc::client::backup_files_only:
+  - /etc
   - /home
   - /usr
   - /var
