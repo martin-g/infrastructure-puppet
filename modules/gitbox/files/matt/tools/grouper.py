@@ -29,6 +29,9 @@ import requests
 logging.basicConfig(filename='grouper.log',
                     format='[%(asctime)s]: %(message)s', level=logging.INFO)
 
+# Git base dirs
+GIT_DIRS = ('/x1/repos/asf', '/x1/repos/private')
+
 # LDAP Defs
 UID_RE = re.compile("uid=([^,]+),ou=people,dc=apache,dc=org")
 
@@ -297,9 +300,9 @@ conn.close()
 logging.info("Found %u account links!" % len(accounts))
 
 # get a list of all repos that are active on gitbox
-gitdir = '/x1/repos/asf'
-allrepos = filter(lambda repo: os.path.isdir(
-    os.path.join(gitdir, repo)), os.listdir(gitdir))
+allrepos = []
+for gitdir in GIT_DIRS:
+  allrepos.extend(repo for repo in os.listdir(gitdir) if os.path.isdir(os.path.join(gitdir, repo)))
 
 # turn that into a list of projects to run the manager for
 for repo in allrepos:
