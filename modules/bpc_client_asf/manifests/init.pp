@@ -11,6 +11,7 @@ class bpc_client_asf {
        ($::noderole !~ /buildbot/) and
        ($::hostname !~ /jenkins/) and
        ($::hostname !~ /spamd/) and
+       ($::hostname !~ /qnode/) and
        ($::hostname !~ /bb-slave/) 
     {
       include backuppc::client
