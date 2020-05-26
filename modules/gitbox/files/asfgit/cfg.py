@@ -80,7 +80,7 @@ extra_writers = extra_writers.split(',') if extra_writers != '' else []
 # Fetch default branch, default to master is repo is bare or has no default yet.
 default_branch = 'master'
 try:
-  default_branch = run.git('symbolic-ref', '--short', 'HEAD').strip()
+  default_branch = run.git('symbolic-ref', '--short', 'HEAD')[1].strip()
 except sp.CalledProcessError as e:  # This can break when repo is bare, beware.
   pass
 
