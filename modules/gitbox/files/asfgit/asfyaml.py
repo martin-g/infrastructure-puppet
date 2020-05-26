@@ -2,6 +2,7 @@ import requests
 import json
 import asfgit.log
 import asfgit.git
+import asfgit.cfg
 import re
 import github as pygithub
 import os
@@ -432,9 +433,9 @@ def notifications(cfg, yml):
     # Get branch
     ref = yml.get('refname', 'master').replace('refs/heads/', '')
 
-    # Ensure this is master, or bail
-    if ref != 'master' and ref != 'trunk':
-        print("[NOTICE] Notification scheme settings can only be applied to the master or trunk branch.")
+    # Ensure this is master, trunk or repo's default branch - otherwise bail
+    if ref != 'master' and ref != 'trunk' and ref != asfgit.cfg.default_branch:
+        print("[NOTICE] Notification scheme settings can only be applied to the master/trunk or default branch.")
         return
 
     # Grab list of valid mailing lists
