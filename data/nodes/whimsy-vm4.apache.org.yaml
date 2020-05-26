@@ -13,7 +13,6 @@ classes:
   - whimsy_server
   - whimsy_server::cronjobs
   - whimsy_server::procmail
-  - zmanda_asf::client
 
 apache::keepalive: 'On'
 apache::keepalive_timeout: '15'

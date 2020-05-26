@@ -4,4 +4,3 @@ classes:
   - ldapserver
   - loggy
   - kif
-  - zmanda_asf::client
