@@ -77,6 +77,13 @@ max_emails = int(_git_config("hooks.asfgit.max-emails"))
 extra_writers = _git_config("hooks.asfgit.extra-writers", default='')
 extra_writers = extra_writers.split(',') if extra_writers != '' else []
 
+# Fetch default branch, default to master is repo is bare or has no default yet.
+default_branch = 'master'
+try:
+  default_branch = run.git('symbolic-ref', '--short', 'HEAD').strip()
+except sp.CalledProcessError as e:  # This can break when repo is bare, beware.
+  pass
+
 gitpubsub_host = _git_config("hooks.asfgit.pubsub-host", DEFAULT_PUBSUB_HOST)
 gitpubsub_port = _git_config("hooks.asfgit.pubsub-port", DEFAULT_PUBSUB_PORT)
 gitpubsub_path = _git_config("hooks.asfgit.pubsub-path", DEFAULT_PUBSUB_PATH)
