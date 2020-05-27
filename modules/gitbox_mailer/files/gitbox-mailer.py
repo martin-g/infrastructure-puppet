@@ -309,7 +309,10 @@ class Actor(threading.Thread):
             for key, event_object in PUBSUB_QUEUE.copy().items():
                 now = time.time()
                 if now - event_object.updated > 5:
-                    del PUBSUB_QUEUE[key]
+                    try:
+                        del PUBSUB_QUEUE[key]
+                    except:
+                        print("[ERROR] Could not prune pubsub queue - double free?")
                     try:
                         event_object.process()
                     except Exception as e:
@@ -321,9 +324,9 @@ def process(js):
     """ Plop the item into the queue, or (if stream of comments) append to existing queue item. """
     action = js.get('action', 'null')
     user = js.get('user', 'null')
-    type_of = js.get('type')
-    issue_id = js.get('id')
-    repository = js.get('repo')
+    type_of = js.get('type', 'null')
+    issue_id = js.get('id', 'null')
+    repository = js.get('repo', 'null')
     key = "%s-%s-%s-%s-%s" % (action, repository, type_of, issue_id, user)
 
     # If not a file review, we don't want to fold...
