@@ -14,7 +14,6 @@ logrotate::rule:
 
 vhosts_asf::vhosts::vhosts:
   examples6x-80:
-    vhost_name: '*'
     priority: '12'
     servername: 'examples6x.wicket.apache.org'
     serveraliases:
@@ -23,11 +22,34 @@ vhosts_asf::vhosts::vhosts:
     ssl: false
     docroot: '/var/www'
     error_log_file: 'examples6x_error.log'
-    custom_fragment: |
-      ProxyPass / http://127.0.0.1:8086/
-      ProxyPassReverse / http://127.0.0.1:8086/
+    rewrites:
+      -
+        comment: 'rewrite ssl'
+        rewrite_cond:
+          - "%%{}{HTTPS} !=on"
+        rewrite_rule:
+          - "^/?(.*) https://%%{}{SERVER_NAME}/$1 [R,L]"
+
+  examples6x-443:
+    priority: '12'
+    servername: 'examples6x.wicket.apache.org'
+    serveraliases:
+      - 'www.examples6x.wicket.apache.org'
+    port: 443
+    ssl: true
+    ssl_cert: '/etc/letsencrypt/live/wicket-vm.apache.org/cert.pem'
+    ssl_key:  '/etc/letsencrypt/live/wicket-vm.apache.org/privkey.pem'
+    ssl_chain: '/etc/letsencrypt/live/wicket-vm.apache.org/chain.pem'
+    docroot: '/var/www'
+    error_log_file: 'examples6x_ssl_error.log'
+    proxy_pass:
+      -
+        path: '/'
+        url: 'http://127.0.0.1:8086/'
+        reverse_urls:
+          - 'http://127.0.0.1:8086/'
+
   examples7x-80:
-    vhost_name: '*'
     priority: '12'
     servername: 'examples7x.wicket.apache.org'
     serveraliases:
@@ -36,11 +58,32 @@ vhosts_asf::vhosts::vhosts:
     ssl: false
     docroot: '/var/www'
     error_log_file: 'examples7x_error.log'
-    custom_fragment: |
-      ProxyPass / http://127.0.0.1:8087/
-      ProxyPassReverse / http://127.0.0.1:8087/
+    rewrites:
+      -
+        comment: 'rewrite ssl'
+        rewrite_cond:
+          - "%%{}{HTTPS} !=on"
+        rewrite_rule:
+          - "^/?(.*) https://%%{}{SERVER_NAME}/$1 [R,L]"
+
+  examples7x-443:
+    priority: '12'
+    servername: 'examples7x.wicket.apache.org'
+    port: 443
+    ssl: true
+    ssl_cert: '/etc/letsencrypt/live/wicket-vm.apache.org/cert.pem'
+    ssl_key:  '/etc/letsencrypt/live/wicket-vm.apache.org/privkey.pem'
+    ssl_chain: '/etc/letsencrypt/live/wicket-vm.apache.org/chain.pem'
+    docroot: '/var/www'
+    error_log_file: 'examples7x_ssl_error.log'
+    proxy_pass:
+      -
+        path: '/'
+        url: 'http://127.0.0.1:8087/'
+        reverse_urls:
+          - 'http://127.0.0.1:8087/'
+
   examples8x-80:
-    vhost_name: '*'
     priority: '12'
     servername: 'examples8x.wicket.apache.org'
     serveraliases:
@@ -49,17 +92,41 @@ vhosts_asf::vhosts::vhosts:
     ssl: false
     docroot: '/var/www'
     error_log_file: 'examples8x_error.log'
-    custom_fragment: |
-      ProxyPass / http://127.0.0.1:8088/
-      ProxyPassReverse / http://127.0.0.1:8088/
-      #websockets
-      RewriteEngine On
-      RewriteCond %%{}{HTTP:UPGRADE} websocket [NC]
-      RewriteCond %%{}{HTTP:CONNECTION} Upgrade$ [NC]
-      RewriteRule .* ws://127.0.0.1:8088%%{}{REQUEST_URI} [P]
-      ProxyPreserveHost On
+    rewrites:
+      -
+        comment: 'rewrite ssl'
+        rewrite_cond:
+          - "%%{}{HTTPS} !=on"
+        rewrite_rule:
+          - "^/?(.*) https://%%{}{SERVER_NAME}/$1 [R,L]"
+
+  examples8x-443:
+    priority: '12'
+    servername: 'examples8x.wicket.apache.org'
+    port: 443
+    ssl: true
+    ssl_cert: '/etc/letsencrypt/live/wicket-vm.apache.org/cert.pem'
+    ssl_key:  '/etc/letsencrypt/live/wicket-vm.apache.org/privkey.pem'
+    ssl_chain: '/etc/letsencrypt/live/wicket-vm.apache.org/chain.pem'
+    docroot: '/var/www'
+    error_log_file: 'examples8x_error.log'
+    proxy_preserve_host: on
+    proxy_pass:
+      -
+        path: '/'
+        url: 'http://127.0.0.1:8088/'
+        reverse_urls:
+          - 'http://127.0.0.1:8088/'
+    rewrites:
+      -
+        comment: 'rewrite websockets'
+        rewrite_cond:
+          - "%%{}{HTTP:UPGRADE} websocket [NC]"
+          - "%%{}{HTTP:CONNECTION} Upgrade$ [NC]"
+        rewrite_rule:
+          - ".* ws://127.0.0.1:8088%%{}{REQUEST_URI} [P]"
+
   examples9x-80:
-    vhost_name: '*'
     priority: '12'
     servername: 'examples9x.wicket.apache.org'
     serveraliases:
@@ -68,13 +135,45 @@ vhosts_asf::vhosts::vhosts:
     ssl: false
     docroot: '/var/www'
     error_log_file: 'examples9x_error.log'
-    custom_fragment: |
-      ProxyPass / http://127.0.0.1:8089/
-      ProxyPassReverse / http://127.0.0.1:8089/
-      #websockets
-      RewriteEngine On
-      RewriteCond %%{}{HTTP:UPGRADE} websocket [NC]
-      RewriteCond %%{}{HTTP:CONNECTION} Upgrade$ [NC]
-      RewriteRule .* ws://127.0.0.1:8089%%{}{REQUEST_URI} [P]
-      ProxyPreserveHost On
+    rewrites:
+      -
+        comment: 'rewrite ssl'
+        rewrite_cond:
+          - "%%{}{HTTPS} !=on"
+        rewrite_rule:
+          - "^/?(.*) https://%%{}{SERVER_NAME}/$1 [R,L]"
       
+  examples9x-443:
+    priority: '12'
+    servername: 'examples9x.wicket.apache.org'
+    port: 443
+    ssl: true
+    ssl_cert: '/etc/letsencrypt/live/wicket-vm.apache.org/cert.pem'
+    ssl_key:  '/etc/letsencrypt/live/wicket-vm.apache.org/privkey.pem'
+    ssl_chain: '/etc/letsencrypt/live/wicket-vm.apache.org/chain.pem'
+    docroot: '/var/www'
+    error_log_file: 'examples9x_ssl_error.log'
+    proxy_preserve_host: on
+    proxy_pass:
+      -
+        path: '/'
+        url: 'http://127.0.0.1:8089/'
+        reverse_urls:
+          - 'http://127.0.0.1:8089/'
+    rewrites:
+      -
+        comment: 'rewrite websockets'
+        rewrite_cond:
+          - "%%{}{HTTP:UPGRADE} websocket [NC]"
+          - "%%{}{HTTP:CONNECTION} Upgrade$ [NC]"
+        rewrite_rule:
+          - ".* ws://127.0.0.1:8088%%{}{REQUEST_URI} [P]"
+
+
+cron:
+  letsencrypt:
+    user: 'root'
+    minute: '0'
+    hour: '0'
+    weekday: '3'
+    command: '/usr/local/bin/certbot-auto renew > /var/log/letsencrypt.log 2>&1'
