@@ -10,7 +10,7 @@ DBUSER='root'
 DUMP=$(which mysqldump)
 DUMPDATE=`${DATE} +%Y%m%d%H%M`
 OLDDUMPDATE=`${DATE} +%Y%m%d%H%M --date='last month'`
-DUMPOPTS='--lock-tables --master-data=1'
+DUMPOPTS='--single-transaction --skip-lock-tables --max_allowed_packet=1024M'
 DUMPROOT='/x1/db_dump/mysql'
 DUMPROOT=<%= @dumproot %>
 EXIT_STATUS=0
@@ -29,7 +29,7 @@ RSYNC_OFFSITE="<%= @rsync_offsite %>"
 
 backup_db() {
   echo "Dumping ${DBNAME} DB..."
-  time ${DUMP} -h ${DBHOST} -u ${DBUSER} --password=${PASS} -P ${PORT} ${DBNAME} | gzip --rsyncable -9 > ${DUMPFILE}
+  time ${DUMP} -h ${DBHOST} -u ${DBUSER} --password=${PASS} -P ${PORT} ${DUMPOPTS} ${DBNAME} | gzip --rsyncable -9 > ${DUMPFILE}
   if [[ ${PIPESTATUS[@]} != "0 0" ]]
     then
       EXIT_STATUS=1
