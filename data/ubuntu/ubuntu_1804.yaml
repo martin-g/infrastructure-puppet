@@ -645,6 +645,7 @@ buildbot_slave::bb_basepackages:
   - python3-pip
   - rake
   - ruby-dev
+  - tox
   - unzip
   - virtualenvwrapper
   - zip
