@@ -61,6 +61,8 @@ JIRA_HEADERS = {
 RE_PROJECT = re.compile(r"(?:incubator-)?([^-]+)")
 RE_JIRA_TICKET = re.compile(r"\b([A-Z0-9]+-\d+)\b")
 
+TLOCK = threading.Lock()
+
 ####################################################
 def jira_update_ticket(ticket, txt, worklog=False):
     """ Post JIRA comment or worklog entry """
@@ -310,7 +312,8 @@ class Actor(threading.Thread):
                 now = time.time()
                 if now - event_object.updated > 5:
                     try:
-                        del PUBSUB_QUEUE[key]
+                        with TLOCK:
+                            del PUBSUB_QUEUE[key]
                     except:
                         print("[ERROR] Could not prune pubsub queue - double free?")
                     try:
@@ -332,10 +335,11 @@ def process(js):
     # If not a file review, we don't want to fold...
     if 'filename' not in js:
         key += str(uuid.uuid4())
-    if key not in PUBSUB_QUEUE:
-        PUBSUB_QUEUE[key] = Event(key, js)
-    else:
-        PUBSUB_QUEUE[key].add(js)
+    with TLOCK:
+        if key not in PUBSUB_QUEUE:
+            PUBSUB_QUEUE[key] = Event(key, js)
+        else:
+            PUBSUB_QUEUE[key].add(js)
 
 if __name__ == '__main__':
     if DEBUG:
