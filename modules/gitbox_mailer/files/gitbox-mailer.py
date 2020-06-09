@@ -308,7 +308,10 @@ class Actor(threading.Thread):
     def run(self):
         """ Copy queue, clear it and run each item """
         while True:
-            for key, event_object in PUBSUB_QUEUE.copy().items():
+            QUEUE_COPY = {}
+            with TLOCK:
+                QUEUE_COPY = PUBSUB_QUEUE.copy()
+            for key, event_object in QUEUE_COPY.items():
                 now = time.time()
                 if now - event_object.updated > 5:
                     try:
