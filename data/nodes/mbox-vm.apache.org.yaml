@@ -37,7 +37,7 @@ rsync::server::module:
     read_only: 'yes'
   private:
     path: '/x1'
-    hosts_allow: '10.10.3.175'
+    hosts_allow: '10.10.3.159'
     auth_users: 'apb-mailprivate'
     secrets_file: '/etc/rsyncd.secrets'
     incoming_chmod: false
