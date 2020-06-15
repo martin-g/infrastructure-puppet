@@ -29,7 +29,7 @@ rsync::server::module:
     read_only: 'no'
   public:
     path: '/x1/archives/'
-    hosts_allow: '10.10.3.25'
+    hosts_allow: '10.10.3.159'
     auth_users: 'apb-mailarchive'
     secrets_file: '/etc/rsyncd.secrets'
     incoming_chmod: false
