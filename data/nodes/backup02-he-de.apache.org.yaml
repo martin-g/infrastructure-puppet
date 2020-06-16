@@ -85,23 +85,14 @@ backuppc::server::apache_configuration: false
 backuppc::server::email_from_user_name: 'BackupPC <cml@apache.org>'
 backuppc::server::email_admin_user_name: 'cml@apache.org'
 
-backuppc::server::full_keep_cnt_min: '2'
-backuppc::server::full_age_max: '180'
+backuppc::server::full_age_max: '90'
 backuppc::server::full_keep_cnt:
-  - 1
-  - 0
-  - 0
   - 1
 
 backuppc::server::incr_keep_cnt: '6'
 backuppc::server::incr_age_max: '30'
 backuppc::server::incr_levels:
   - 1
-  - 2
-  - 3
-  - 4
-  - 5
-  - 6
 
 backuppc::client::backup_files_only:
   - /home
