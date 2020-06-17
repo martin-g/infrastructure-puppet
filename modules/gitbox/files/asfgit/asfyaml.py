@@ -228,8 +228,8 @@ def github(cfg, yml):
     """ GitHub settings updated. Can set up description, web site and topics """
     # Test if we need to process this
     ref = yml.get('refname', 'master').replace('refs/heads/', '')
-    if ref != 'master':
-        print("Saw GitHub meta-data in .asf.yaml, but not master branch, not updating...")
+    if ref != 'master' and ref != asfgit.cfg.default_branch:
+        print("Saw GitHub meta-data in .asf.yaml, but not master or default branch, not updating...")
         return
     # Check if cached yaml exists, compare if changed
     ymlfile = '/tmp/ghsettings.%s.yml' % cfg.repo_name
