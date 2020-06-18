@@ -1,6 +1,6 @@
 import asfgit.run as run
 import asfgit.util as util
-
+import asfgit.cfg as cfg
 
 FIELDS = [
     ("commit", "%h"),
@@ -75,6 +75,10 @@ class RefUpdate(object):
         for p in patterns:
             # foo == foo
             if p == self.name:
+                return True
+            # magic variable $default, points to default branch.
+            # Since cfg.default_branch is using --short, we crop away refs/heads/ first.
+            if p == '$default' and self.name.replace('refs/heads/', '') == cfg.default_branch:
                 return True
             # foo/ == foo/bar but also foo exactly
             if p.endswith("/") and (self.name.startswith(p) or self.name == p[:-1]):

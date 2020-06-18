@@ -15,7 +15,7 @@
 
 [hooks.asfgit]
     debug = false
-    protect = refs/heads/trunk refs/heads/master refs/heads/rel/ refs/tags/rel/
+    protect = refs/heads/trunk refs/heads/master $default refs/heads/rel/ refs/tags/rel/
     no-merges = false
     sendmail = /usr/local/sbin/sendmail
     recips = %(commit)s
