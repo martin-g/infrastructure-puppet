@@ -1,3 +1,0 @@
----
-datadog_agent::tags:
-  - 'noderole:testing_host'
