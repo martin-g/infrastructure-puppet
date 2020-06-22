@@ -161,6 +161,8 @@ Facter.add("noderole") do
       "jenkins-external"
     elsif hostname =~ /openwhisk-vm\d-he-de/ # OpenWhisk Jenkins boxes
       "jenkins-external"
+    elsif hostname.include? "test"
+      "testing-host"
     else
       "default"
     end
