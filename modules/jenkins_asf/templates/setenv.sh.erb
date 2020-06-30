@@ -19,6 +19,6 @@ CATALINA_OPTS="-server -XX:+AlwaysPreTouch ${CATALINA_OPTS}"
 # CATALINA_OPTS="-XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -XX:+UnlockDiagnosticVMOptions -XX:G1SummarizeRSetStatsPeriod=1 ${CATALINA_OPTS}"
 #
 CATALINA_OPTS="-XX:+UseG1GC -XX:+ExplicitGCInvokesConcurrent -XX:+ParallelRefProcEnabled -XX:+UseStringDeduplication -Dorg.apache.tomcat.util.buf.UDecoder.ALLOW_ENCODED_SLASH=true ${CATALINA_OPTS}"
-
+CATALINA_OPTS="-Dcom.cloudbees.jenkins.plugins.license.nectar.CloudBeesUpdateSite.disableAutoAdd=true -Dhudson.model.UpdateCenter.defaultUpdateSiteId=default ${CATALINA_OPTS}"
 JAVA_HOME=/usr/lib/jvm/java-8-oracle
 export CATALINA_OPTS JAVA_HOME
