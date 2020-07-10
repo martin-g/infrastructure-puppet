@@ -195,11 +195,11 @@ class jenkins_slave_windows (
   exec { 'set JAVA_HOME':
     command => "c:\Windows\System32\cmd.exe /c setx JAVA_HOME \"F:\\jenkins\\tools\\java\\latest\"",
   }
-  
+
   #check to see if JNLP agent is connected to jenkins02, if not, start it up
-  exec { 'Auto start agent':
-    command  => "Start-ScheduledTask \"Jenkins Restart\"",
-    onlyif   => "if (!(Get-NetTCPConnection -RemotePort 2014 -ErrorAction SilentlyContinue)) { exit 0; }",
-    provider => powershell,
-  }
+  #exec { 'Auto start agent':
+  #  command  => "Start-ScheduledTask \"Jenkins Restart\"",
+  #  onlyif   => "if (!(Get-NetTCPConnection -RemotePort 2014 -ErrorAction SilentlyContinue)) { exit 0; }",
+  #  provider => powershell,
+  #}
 }
