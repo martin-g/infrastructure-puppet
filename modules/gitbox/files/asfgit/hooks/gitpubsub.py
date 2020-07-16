@@ -91,7 +91,7 @@ def main():
                 "subject": commit.subject,
                 "log": commit.subject,
                 "body": commit.body,
-                "files": cfiles
+                "files": cfiles,
             })
 
 
