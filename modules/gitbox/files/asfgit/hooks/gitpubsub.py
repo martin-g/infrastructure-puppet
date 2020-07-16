@@ -70,6 +70,9 @@ def main():
             })
             continue
         for commit in ref.commits(num=10, reverse=True):
+            cfiles = commit.files()
+            if len(cfiles) > 1000:
+                cfiles = []  # Crop if payload is too large, prefer dummy payload over nothing.
             send_json({
                 "autopublish": via_asfyaml,
                 "repository": "git",
@@ -88,7 +91,7 @@ def main():
                 "subject": commit.subject,
                 "log": commit.subject,
                 "body": commit.body,
-                "files": commit.files()
+                "files": cfiles
             })
 
 
