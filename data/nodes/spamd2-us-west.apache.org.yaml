@@ -25,7 +25,7 @@ postfix::dbfile:
   transport_maps:
     content: |
       infratest.apache.org    smtp:[mailgw01-he-de.apache.org]:2025
-      infra.apache.org        smtp:[207.244.88.153]:2025
+      infra.apache.org        smtp:[hermes.apache.org]:2025
       apache.org              smtp:[hermes.apache.org]:2025
       .apache.org             smtp:[hermes.apache.org]:2025    
       apachecon.com           smtp:[hermes.apache.org]:2025
