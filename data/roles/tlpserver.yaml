@@ -302,10 +302,6 @@ vhosts_asf::modules::modules:
     name: 'allowmethods'
   asis:
     name: 'asis'
-  cgi:
-    name: 'cgi'
-  cgid:
-    name: 'cgid'
   lua:
     name: 'lua'
   macro:
