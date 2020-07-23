@@ -50,3 +50,9 @@ relays:
         hook: https://builds.apache.org/github-webhook/
         format: json
         enabled: true
+    ci-builds:
+        repos: "*"
+        events: all
+        hook: https://ci-builds.apache.org/github-webhook/
+        format:json
+        enabled:true
