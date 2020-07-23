@@ -17,6 +17,5 @@ HOME: /home/svnwc
 LANG: en_US.UTF-8
 
 [track]
-# No longer needed!!
-# /dist: %(DIST)s/release/
+/dist: %(DIST)s/release/
 
