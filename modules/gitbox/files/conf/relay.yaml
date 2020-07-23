@@ -54,5 +54,5 @@ relays:
         repos: "*"
         events: all
         hook: https://ci-builds.apache.org/github-webhook/
-        format:json
-        enabled:true
+        format: json
+        enabled: true
