@@ -16,7 +16,7 @@ class gitbox_mailer (
   if !defined(Python::Pip['asfpy']) {
     python::pip {
       'asfpy' :
-        ensure   => present;
+        ensure   => latest;
     }
   }
   if !defined(Python::Pip['pyyaml']) {
