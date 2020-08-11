@@ -39,6 +39,7 @@ class projects_pvm_asf (
       mode   => '0600';
   }
 
+  # CRON JOBS DISABLED BECAUSE OF MOVE TO projects-vm3.a.o
   cron {
 
   # WARNING: the percent character is special in a crontab; it must be escaped with a backslash
@@ -48,6 +49,7 @@ class projects_pvm_asf (
 
   # Check in any updated data/releases files
     'rao_releases_ci':
+      ensure  => absent,
       minute  => 45,
       hour    => [0, 6, 12, 18],
       user    => 'root',
@@ -58,6 +60,7 @@ class projects_pvm_asf (
   # Check in any updated data/history files
   # These are copied extracts of the files created by parsepmcs.py which is run at 00 min 4,12,20 hours
     'rao_history_ci':
+      ensure  => absent,
       minute  => 10,
       hour    => [4, 12, 20],
       user    => 'root',
@@ -67,6 +70,7 @@ class projects_pvm_asf (
   # Check in any updated/new json files under projects.apache.org
   # The "svn add" job run under www-data is run at 04:10
     'pao_json_ci':
+      ensure  => absent,
       minute  => 20,
       hour    => 4,
       user    => 'root',
