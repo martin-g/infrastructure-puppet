@@ -12,7 +12,7 @@ class apmirror (
   $svnwc_user     = 'svnwc',
   $user_present   = 'present',
   $username       = 'apmirror',
-  $packages       = ['libwww-perl'],
+  $packages       = ['libwww-perl', 'libnet-dns-perl'],
 ){
 
   package { $packages:
