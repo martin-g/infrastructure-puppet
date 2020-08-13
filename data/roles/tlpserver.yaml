@@ -141,6 +141,7 @@ svnwcsub::username:                          'svnwc'
 apache::custom_config:
   closerlua:
     content: |
+      GeoIPDBFile /usr/share/GeoIP/GeoIPv6.dat MemoryCache
       LuaScope thread
       LuaCodeCache stat
       RewriteEngine On
