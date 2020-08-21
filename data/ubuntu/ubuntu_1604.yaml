@@ -70,7 +70,9 @@ apache::log_formats:
     \"geo_lat\": \"%%{HIERA}{GEOIP_LATITUDE}n\",
     \"geo_coords\": \"%%{HIERA}{GEOIP_LATITUDE}n,%%{HIERA}{GEOIP_LONGITUDE}n\",
     \"geo_city\": \"%%{HIERA}{GEOIP_CITY}n\",
-    \"geo_combo\": \"%%{HIERA}{GEOIP_CITY}n, %%{HIERA}{GEOIP_COUNTRY_NAME}n\"
+    \"geo_combo\": \"%%{HIERA}{GEOIP_CITY}n, %%{HIERA}{GEOIP_COUNTRY_NAME}n\",
+    \"port\": %p,
+    \"protocol\": \"%H\"
     }'
 
 apache::trace_enable: Off
