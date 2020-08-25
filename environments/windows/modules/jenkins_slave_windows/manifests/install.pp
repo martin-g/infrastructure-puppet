@@ -88,7 +88,7 @@ class jenkins_slave_windows::install (
       exec { "extract ${geckodriver_version}" :
         command  => "powershell.exe Expand-Archive -Force F:\\tools_zips\\asf-build-geckodriver-${geckodriver_version}.zip -DestinationPath F:\\jenkins\\tools\\geckodriver\\${geckodriver_version}", # lint:ignore:140chars
         provider => powershell,
-        creates  => "F:\\jenkins\\tools\\geckodriver\\${geckodriver_version}\\win32\\geckodriver.exe",
+        creates  => "F:\\jenkins\\tools\\geckodriver\\${geckodriver_version}\\win64\\geckodriver.exe",
       }
     }
 
