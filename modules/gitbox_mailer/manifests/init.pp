@@ -75,7 +75,7 @@ class gitbox_mailer (
     }
     cron { 'fetch_lists':
       ensure  => present,
-      command => "curl $statsurl > /x1/gitbox/mailinglists.json 2>&1",
+      command => "curl $statsurl --output /x1/gitbox/mailinglists.json > /dev/null 2>&1",
       user    => root,
       minute  => '*/10'
     }
