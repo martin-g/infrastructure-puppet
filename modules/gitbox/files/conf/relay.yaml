@@ -56,3 +56,9 @@ relays:
         hook: https://ci-builds.apache.org/github-webhook/
         format: json
         enabled: true
+    ci-builds-prs:
+        repos: "*"
+        events: pr
+        hook: https://ci-builds.apache.org/github-pull-request-hook/
+        format: formdata
+        enabled: true
