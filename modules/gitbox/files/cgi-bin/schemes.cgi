@@ -52,7 +52,7 @@ The below YAML snippet depicts your current default settings for %s:<br/>
     <b>commits:</b>      %s
     <b>issues:</b>       %s
     <b>pullrequests:</b> %s
-    <b>jira_options:</b> link label %s
+    <b>jira_options:</b> %s
     </pre>
 To change them, please commit your changes to your <a href='https://s.apache.org/asfyaml'>.asf.yaml</a> file in your repository.<br/>
 Note that all changes will cause the (P)PMC to be notified, and must be made in the master/trunk branch.
