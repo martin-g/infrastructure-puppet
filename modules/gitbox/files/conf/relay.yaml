@@ -50,6 +50,18 @@ relays:
         hook: https://builds.apache.org/github-webhook/
         format: json
         enabled: true
+    trafficserver-builds:
+        repos: "trafficserver*"
+        events: all
+        hook: https://ci-trafficserver.apache.org/github-webhook/
+        format: json
+        enabled: true
+    trafficserver-builds-prs:
+        repos: "trafficserver*"
+        events: pr
+        hook: https://ci-trafficserver.apache.org/github-pull-request-hook/
+        format: formdata
+        enabled: true
     ci-builds:
         repos: "*"
         events: all
