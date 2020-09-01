@@ -23,8 +23,10 @@ def checkout_git_repo(path, source, branch):
     """ Checks out a new staging/publish site from a repo """
     syslog.syslog(syslog.LOG_INFO, "Checking out %s (%s) as %s..." % (source, branch, path))
     try:
-        subprocess.check_output((GIT_CMD, "clone", "-b", branch, "--single-branch", source, path))
-        syslog.syslog(syslog.LOG_INFO, "Checkout worked!")
+        rv = subprocess.check_output((GIT_CMD, "clone", "-b", branch, "--single-branch", source, path), stderr=subprocess.STDOUT)
+        syslog.syslog(syslog.LOG_INFO, "Checkout worked! Git said:")
+        for line in rv.split("\n"):
+            syslog.syslog(syslog.LOG_INFO, "[git %s] %s" % (source, line))
     except subprocess.CalledProcessError as e:
         syslog.syslog(syslog.LOG_WARNING, "Could not check out %s: %s" % (source, e.output))
     
