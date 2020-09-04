@@ -396,6 +396,9 @@ spamassassin::spamc::spamd_peers:
   - 'spamd2-us-west 10.40.0.9'
   - 'spamd3-us-west 10.40.0.10'
   - 'spamd4-us-west 10.40.0.11'
+  - 'spamproc1-he-de 116.203.196.100'
+  - 'spamproc1-he-fi 95.217.134.168'
+
 spamassassin::spamc::haproxy_mode: 'tcp'
 spamassassin::spamc::haproxy_port: '10024'
 spamassassin::spamc::haproxy_maxconns: '5000'
