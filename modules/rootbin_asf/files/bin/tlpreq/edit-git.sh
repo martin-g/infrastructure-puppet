@@ -21,7 +21,7 @@ if [ -n "$PODLING_DIR" ] && [ -n "$NAME" ] && [ -n "$TLP_REPO" ]; then
     # From asfgit-admin NOTES on TLP move:
     # Change commit mailing list address in project.git/config
     COMMITS_EMAIL="commits@$NAME.apache.org"
-    if ! /usr/local/bin/swaks -q RCPT -t "$COMMITS_EMAIL" -s mx1-lw-us.apache.org. >/dev/null; then
+    if ! /usr/local/bin/swaks -q RCPT -t "$COMMITS_EMAIL" -s mx1-he-de.apache.org. >/dev/null; then
         echo "Runtime error: '$COMMITS_EMAIL' rejected by MX" >&2
         exit 2
     fi

@@ -101,6 +101,7 @@ vhosts_asf::vhosts::vhosts:
 cron:
   # Roundtrip checks every 5 minutes
   probe:
+    ensure: absent
     user: 'root'
     minute: '*/5'
     hour: '*'
