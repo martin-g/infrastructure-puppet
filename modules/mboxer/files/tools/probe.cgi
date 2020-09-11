@@ -27,7 +27,7 @@ def run_check():
             os.chmod('/tmp/probes.json', 0o666)
 
 def send_probe():
-    server = smtplib.SMTP('mx1-lw-us.apache.org')
+    server = smtplib.SMTP('mx1-he-de.apache.org')
     emlid = "<%s@mbox-vm.apache.org>" % str(uuid.uuid4())
     msg = "From: probe@mbox-vm.apache.org\r\nMessage-ID: %s\r\nTo: roundtrip@apache.org\r\nSubject: Roundtrip Test\r\n\r\nID: %s TIMESTAMP: %u\r\n" % (emlid, emlid, time.time())
     server.sendmail('probe@mbox-vm.apache.org', ['roundtrip@apache.org'], msg)
