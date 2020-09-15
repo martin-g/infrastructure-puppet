@@ -67,7 +67,7 @@ def removeGitHubOrgMember(login):
     if login.lower() in ['humbedooh', 'asfbot', 'asfgit']:
         logging.info("Not removing this account just yet")
         return
-    logging.info("- Removing %s from organisation...")
+    logging.info("- Removing %s from organisation..." % login)
     url = "https://api.github.com/orgs/apache/members/%s" % login
     r = requests.delete(url, headers = {'Authorization': "token %s" % ORG_READ_TOKEN})
 
