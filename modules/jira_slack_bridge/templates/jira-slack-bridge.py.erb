@@ -10,7 +10,7 @@ import sys
 import time
 import json
 import requests
-import slackclient
+import slack
 import yaml
 import re
 import datetime
@@ -27,7 +27,7 @@ JIRA_PASS = '<%= @jirapass %>'
 # Slack Token
 SLACK_TOKEN = "<%= @slacktoken %>"
 
-SC = slackclient.SlackClient(SLACK_TOKEN)
+SC = slack.WebClient(token=SLACK_TOKEN)
 
 def sendNotice(msg, cid, txt = None):
     """ Quick shortcut to sending a payload to Slack """
