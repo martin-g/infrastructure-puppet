@@ -2121,30 +2121,24 @@ vhosts_asf::vhosts::vhosts:
     vhost_name: '*'
     port: 80
     servername: 'tomee.apache.org'
-    docroot: '/www/tomee.apache.org/content'
+    docroot: '/www/tomee.apache.org'
     manage_docroot: false
     serveraliases:
       - 'tomee.*.apache.org'
       - 'openejb.apache.org'
       - 'openejb.*.apache.org'
-    scriptalias: '/cgi-bin/ /www/tomee.apache.org/cgi-bin/'
     override:
       - 'All'
-    rewrites:
-      -
-        rewrite_rule:
-          - '^/favicon.ico /www/tomee.apache.org/content/favicon.ico'
     serveradmin: 'users@infra.apache.org'
     access_log_file: '/x1/logs/weblog.log'
     error_log_file: '/x1/logs/errorlog.log'
     directories:
       -
-        path: '/www/tomee.apache.org/content'
+        path: '/www/tomee.apache.org'
         options:
           - 'Indexes'
           - 'FollowSymLinks'
           - 'MultiViews'
-          - 'ExecCGI'
         allow_override:
           - 'All'
     custom_fragment: |
@@ -2160,30 +2154,24 @@ vhosts_asf::vhosts::vhosts:
     port: 443
     ssl: true
     servername: 'tomee.apache.org'
-    docroot: '/www/tomee.apache.org/content'
+    docroot: '/www/tomee.apache.org'
     manage_docroot: false
     serveraliases:
       - 'tomee.*.apache.org'
       - 'openejb.apache.org'
       - 'openejb.*.apache.org'
-    scriptalias: '/cgi-bin/ /www/tomee.apache.org/cgi-bin/'
     override:
       - 'All'
-    rewrites:
-      -
-        rewrite_rule:
-          - '^/favicon.ico /www/tomee.apache.org/content/favicon.ico'
     serveradmin: 'users@infra.apache.org'
     access_log_file: '/x1/logs/weblog.log'
     error_log_file: '/x1/logs/errorlog.log'
     directories:
       -
-        path: '/www/tomee.apache.org/content'
+        path: '/www/tomee.apache.org'
         options:
           - 'Indexes'
           - 'FollowSymLinks'
           - 'MultiViews'
-          - 'ExecCGI'
         allow_override:
           - 'All'
     custom_fragment: |
