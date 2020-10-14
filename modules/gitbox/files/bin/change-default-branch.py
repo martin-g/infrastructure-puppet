@@ -77,7 +77,6 @@ def main():
     cfg = configparser.ConfigParser()
     cfg.read(CONFIG_FILE)  # Shhhh
     token = cfg.get("github", "token")
-    token = 'foo'
 
     for line in sys.stdin.readlines():
         line = line.strip()
