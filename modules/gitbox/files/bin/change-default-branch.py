@@ -54,7 +54,7 @@ def change_default_branch(repo: str, branch: str, token: str):
 
     repo += ".git"
     print("Changing HEAD file locally on GitBox for %s to %s..." % (repo, branch))
-    with open(os.path.join(REPO_ROOT, repo, "HEAD", "w")) as f:
+    with open(os.path.join(REPO_ROOT, repo, "HEAD"), "w") as f:
         f.write("ref: refs/heads/%s" % branch)
 
     print("Done with %s" % repo)
