@@ -222,7 +222,7 @@ def main():
             if created:
                 try:
                     # Clone repo
-                    subprocess.check_output("cd /x1/repos/asf/ && /x1/gitbox/bin/gitbox-clone -c %s -d \"%s\" https://github.com/apache/%s.git %s.git" % (commitmail, title, reponame, reponame), shell = True)
+                    subprocess.check_output("cd /x1/repos/asf/ && /x1/gitbox/bin/gitbox-clone -c %s -d \"%s\" -b main https://github.com/apache/%s.git %s.git" % (commitmail, title, reponame, reponame), shell = True)
                     time.sleep(3) # Wait for GH??
                     # Set apache.dev value in config
                     subprocess.check_output("cd /x1/repos/asf/%s.git/ && git config apache.dev \"%s\"" % (reponame, ghmail), shell = True)
