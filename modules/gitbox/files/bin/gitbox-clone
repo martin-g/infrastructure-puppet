@@ -38,9 +38,9 @@ ORG_TOKEN = CONFIG.get('github', 'token')
 
 def rmWebhooks(repo):
     """Checks for and removes stale web hooks"""
-    url = "https://api.github.com/repos/apache/%s/hooks?access_token=%s" % (repo, ORG_TOKEN)
-    response = urllib2.urlopen(url)
-    data = json.load(response)
+    url = "https://api.github.com/repos/apache/%s/hooks" % repo
+    headers = {"Authorization": "token %s" % ORG_TOKEN}
+    data = requests.get(url, headers=headers).json()
     for hook in data:
         # Is this an old git-wip hook?
         if 'config' in hook and hook['config'].get('url'):
