@@ -7,15 +7,20 @@ touch_dot_revision() {
 
 main() {
   MODE="$1"
+  WCROOT="$2"
+  # Don't touch gitwcsub/.asf.yaml checkouts, period.
+  if [ -d "$WCROOT/.git" ] ; then
+    echo "$WCROOT is a git repository, do not check out svn here!"
+    exit 1
+  fi
+  
   if [ x"$MODE" = x"post-update" ] ; then
-    WCROOT="$2"
     REVNUM="$3"
     URL="$4"
     touch_dot_revision
   fi
 
   if [ x"$MODE" = x"boot" ] ; then
-    WCROOT="$2"
     REVNUM="$3"
     URL="$4"
     touch_dot_revision
