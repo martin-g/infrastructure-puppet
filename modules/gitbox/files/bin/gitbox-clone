@@ -89,7 +89,7 @@ def main():
 
 def clone_git(git_url, git_dir, desc):
     log("Initializing Git repository.")
-    git("clone", "--mirror", git_url, git_dir)
+    git("clone", "--mirror", "--branch", "main", git_url, git_dir)
 
     if desc is None:
         desc = run_editor(initial="Project description, ie 'Apache Jackrabbit'")
