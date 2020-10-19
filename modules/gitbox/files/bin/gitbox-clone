@@ -91,9 +91,10 @@ def main():
 
 def clone_git(git_url, git_dir, desc, defbranch):
     log("Initializing Git repository.")
-    if not defbranch:
-        defbranch = 'master'
-    git("clone", "--mirror", "--branch", defbranch, git_url, git_dir)
+    if defbranch:
+        git("clone", "--mirror", "--branch", defbranch, git_url, git_dir)
+    else:
+        git("clone", "--mirror", git_url, git_dir)
 
     if desc is None:
         desc = run_editor(initial="Project description, ie 'Apache Jackrabbit'")
