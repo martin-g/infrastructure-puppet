@@ -431,7 +431,7 @@ def github(cfg, yml):
         # Removing branches from this collection does not refer to removing protection settings.
         # The reaming items are considered as old and invalid branches that have protection currently enabled.
         # These branches will be stripped of its protection settings at the end.
-        enabledProtectedBranches = getEnabledProtectedBranchList(GH_TOKEN, repo_name, False, False)
+        enabledProtectedBranches = getEnabledProtectedBranchList(GH_TOKEN, cfg.repo_name, False, False)
 
         if isinstance(protected_branches, dict) and all(isinstance(x, basestring) for x in protected_branches):
             # For each defined branch, fetch and format the user-defined settings and submit GH API.
