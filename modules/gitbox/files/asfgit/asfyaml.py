@@ -263,7 +263,7 @@ def setProtectedBranch (GH_TOKEN, cfg, branch, required_status_checks, required_
         )
 
     title = "Protected Branches"
-    message = "GitHub Protected Branches has been enabled on branch=%s" % (pb_branch)
+    message = "GitHub Protected Branches has been enabled on branch=%s" % (branch)
     print(message)
     notifiyPrivateMailingList(cfg, title, message)
 
