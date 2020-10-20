@@ -223,6 +223,155 @@ def pelican(cfg, yml):
     s.post('https://ci2.apache.org/api/v2/forceschedulers/pelican_websites', json = payload)
     print("Done!")
 
+GH_BRANCH_PROTECTION_URL_TPL = 'https://api.github.com/repos/apache/%s/branches/%s/protection?access_token=%s'
+GH_BRANCH_PROTECTION_URL_ACCEPT = 'application/vnd.github.luke-cage-preview+json'
+
+def getEnabledProtectedBranchList (GH_TOKEN, repo_name, url, isLast):
+    if url:
+        REQ_URL = '%s?access_token=%s' % (url, GH_TOKEN)
+    else:
+        REQ_URL = 'https://api.github.com/repos/apache/%s/branches?protected=true&access_token=%s' % (repo_name, GH_TOKEN)
+
+    response = requests.get(REQ_URL)
+
+    branchCollection = []
+    for branch in response.json():
+        branchCollection.append(branch.get("name"))
+
+    if response.links and response.links["next"] and not isLast:
+        isLast = response.links["next"]["url"] == response.links["last"]["url"]
+        branchCollection = branchCollection + getEnabledProtectedBranchList(GH_TOKEN, repo_name, response.links["next"]["url"], isLast)
+
+    return branchCollection
+
+def setProtectedBranch (GH_TOKEN, cfg, branch, required_status_checks, required_pull_request_reviews):
+    REQ_URL = GH_BRANCH_PROTECTION_URL_TPL % (cfg.repo_name, branch, GH_TOKEN)
+    response = requests.put(REQ_URL, headers = {'Accept': GH_BRANCH_PROTECTION_URL_ACCEPT}, json = {
+        'enforce_admins': None,
+        'restrictions': None,
+        'required_status_checks': required_status_checks,
+        'required_pull_request_reviews': required_pull_request_reviews
+    })
+    json = response.json()
+
+    if response.status_code != 200:
+        raise Exception(
+            "[GitHub] Request error with message: \"%s\". (status code: %s)" % (
+                json.get("message"),
+                response.status_code
+            )
+        )
+
+    title = "Protected Branches"
+    message = "GitHub Protected Branches has been enabled on branch=%s" % (pb_branch)
+    print(message)
+    notifiyPrivateMailingList(cfg, title, message)
+
+    return response
+
+def removeProtectedBranch (GH_TOKEN, cfg, branch):
+    REQ_URL = GH_BRANCH_PROTECTION_URL_TPL % (cfg.repo_name, branch, GH_TOKEN)
+    response = requests.delete(REQ_URL)
+    json = response.json()
+
+    if response.status_code != 200:
+        raise Exception(
+            "[GitHub] Request error with message: \"%s\". (status code: %s)" % (
+                json.get("message"),
+                response.status_code
+            )
+        )
+
+    title = "Protected Branches"
+    message = "GitHub Protected Branches has been be removed from branch=%s" % (branch)
+    print(message)
+    notifiyPrivateMailingList(cfg, title, message)
+
+    return response
+
+def setProtectedBranchRequiredSignature (GH_TOKEN, cfg, pb_branch, required_signatures):
+    REQ_URL = 'https://api.github.com/repos/apache/%s/branches/%s/protection/required_signatures?access_token=%s' % (cfg.repo_name, pb_branch, GH_TOKEN)
+    ACCEPT_HEADER = 'application/vnd.github.zzzax-preview+json'
+
+    if type(required_signatures) is not bool:
+        required_signatures = False
+        print('The GitHub protected branch setting "required_signatures" contains an invalid value. It will be set to "False"')
+
+    if required_signatures:
+        response = requests.post(REQ_URL, headers = {'Accept': ACCEPT_HEADER})
+    else:
+        response = requests.delete(REQ_URL, headers = {'Accept': ACCEPT_HEADER})
+
+    json = response.json()
+
+    if response.status_code != 200:
+        raise Exception(
+            "[GitHub] Request error with message: \"%s\". (status code: %s)" % (
+                json.get("message"),
+                response.status_code
+            )
+        )
+
+    title = "Protected Branches"
+    message = "GitHub Protected Branches has set requires signature setting on branch '%s' to '%s'" % (pb_branch, required_signatures)
+    print(message)
+    notifiyPrivateMailingList(cfg, title, message)
+
+    return response
+
+def formatProtectedBranchRequiredStatusChecks(required_status_checks):
+    if type(required_status_checks) is dict:
+        # Update the "required_status_checks" data to ensure it has correct allowed data.
+        required_status_checks = {
+            # We are expecting a boolean value
+            'strict': required_status_checks.get('strict', False),
+
+            # We current do not support defining context (e.g. "continuous-integration/travis-ci")
+            'contexts': []
+        }
+    elif required_status_checks is not None:
+        # If "required_status_checks" was not None but also it is not an object, we will force set it to None.
+        required_status_checks = None
+
+    return required_status_checks
+
+def formatProtectedBranchRequiredPullRequestReview(required_pull_request_reviews):
+    # Update the "required_pull_request_reviews" to ensure it has correct allowed data.
+    if type(required_pull_request_reviews) is dict:
+        reviewRequiredCount = required_pull_request_reviews.get('required_approving_review_count', 1)
+
+        if reviewRequiredCount > 6:
+            reviewRequiredCount = 6
+            print('The maximum allowed review count can not be greater than 6. The review count has been changed to 6.')
+        elif reviewRequiredCount < 1:
+            reviewRequiredCount = 1
+            print('The minimum allowed review count can not be less than 1. The review count has been changed to 1.')
+
+        required_pull_request_reviews = {
+            'dismiss_stale_reviews': required_pull_request_reviews.get('dismiss_stale_reviews', False),
+            'require_code_owner_reviews': required_pull_request_reviews.get('require_code_owner_reviews', False),
+            'required_approving_review_count': reviewRequiredCount
+        }
+    elif required_pull_request_reviews is not None:
+        # If "required_pull_request_reviews" was not None but also it is not an object, we will force set it to None.
+        required_pull_request_reviews = None
+
+    return required_pull_request_reviews
+
+def notifiyPrivateMailingList(cfg, title, body):
+    # infer project name
+    m = re.match(r"(?:incubator-)?([^-.]+)", cfg.repo_name)
+    pname = m.group(1)
+    pname = WSMAP.get(pname, pname)
+
+    # Tell project what happened, on private@
+    message = "The following changes were applied to %s by %s.\n\n%s\n\nWith regards,\nASF Infra.\n" % (cfg.repo_name, cfg.committer, body)
+    subject = "%s for %s.git has been updated" % (title, cfg.repo_name)
+    asfpy.messaging.mail(
+        sender='GitBox <gitbox@apache.org>',
+        recipients=['private@%s.apache.org' % pname],
+        subject=subject,
+        message=message)
 
 def github(cfg, yml):
     """ GitHub settings updated. Can set up description, web site and topics """
@@ -256,6 +405,7 @@ def github(cfg, yml):
         ghp_branch = yml.get('ghp_branch')
         ghp_path = yml.get('ghp_path', '/docs')
         autolink = yml.get('autolink') # TBD: https://help.github.com/en/github/administering-a-repository/configuring-autolinks-to-reference-external-resources
+        protected_branches = yml.get('protected_branches')
 
         if desc:
             repo.edit(description=desc)
@@ -275,7 +425,64 @@ def github(cfg, yml):
                     raise Exception(".asf.yaml: Invalid GitHub label '%s' - must be lowercase alphanumerical and <= 35 characters!" % topic)
             repo.replace_topics(topics)
         print("GitHub repository meta-data updated!")
-        
+
+        # Fetches a collection of enabled protected branches.
+        # Branches will be removed from this collection if they exist in the ".asf.yaml" file with settings.
+        # Removing branches from this collection does not refer to removing protection settings.
+        # The reaming items are considered as old and invalid branches that have protection currently enabled.
+        # These branches will be stripped of its protection settings at the end.
+        enabledProtectedBranches = getEnabledProtectedBranchList(GH_TOKEN, repo_name, False, False)
+
+        if isinstance(protected_branches, list) and all(isinstance(x, basestring) for x in protected_branches):
+            # For each defined branch, fetch and format the user-defined settings and submit GH API.
+            for pb_branch in protected_branches:
+                pb_branch_data = protected_branches.get(pb_branch)
+
+                # If a user-defined a branch with no settings provided, this branch will be skipped.
+                # Additionally, no settings mean no protection. If the branch used to have protection enabled, it will be removed.
+                if type(pb_branch_data) is not dict:
+                    print('There is no protected branch data to set for the branch: %s' % pb_branch)
+                    continue
+
+                # Here is where we remove the item from the known enabledProtectedBranches collection.
+                # This will ensure that this branch's with defined settings are not removed.
+                try:
+                    enabledProtectedBranches.remove(pb_branch)
+                except:
+                    print('Branch "%s" is not in the exisiting branch collection. No action is required.' % (pb_branch))
+
+                # Get user settings and format for sending
+                required_status_checks = formatProtectedBranchRequiredStatusChecks(
+                    pb_branch_data.get("required_status_checks", None)
+                )
+
+                required_pull_request_reviews = formatProtectedBranchRequiredPullRequestReview(
+                    pb_branch_data.get("required_pull_request_reviews", None)
+                )
+
+                required_signatures = pb_branch_data.get("required_signatures", False)
+
+                # GH API Calls to add/update
+                setProtectedBranch(
+                    GH_TOKEN,
+                    cfg,
+                    pb_branch,
+                    required_status_checks,
+                    required_pull_request_reviews
+                )
+
+                setProtectedBranchRequiredSignature(
+                    GH_TOKEN,
+                    cfg,
+                    pb_branch,
+                    required_signatures
+                )
+
+        # Here is where the remaining branches as considered invalid/old branches with protection and will be removed.
+        # The cleanup process
+        for branch_to_disable_protection in enabledProtectedBranches:
+            removeProtectedBranch(GH_TOKEN, cfg, branch_to_disable_protection)
+
         # GitHub Pages?
         if ghp_branch:
             GHP_URL = 'https://api.github.com/repos/apache/%s/pages?access_token=%s' % (cfg.repo_name, GH_TOKEN)
