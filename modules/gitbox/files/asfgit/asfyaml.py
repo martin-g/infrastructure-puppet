@@ -326,8 +326,8 @@ def formatProtectedBranchRequiredStatusChecks(required_status_checks):
             # We are expecting a boolean value
             'strict': required_status_checks.get('strict', False),
 
-            # We current do not support defining context (e.g. "continuous-integration/travis-ci")
-            'contexts': []
+            # WIP: Contexts
+            'contexts': required_status_checks.get('contexts', [])
         }
     elif required_status_checks is not None:
         # If "required_status_checks" was not None but also it is not an object, we will force set it to None.
