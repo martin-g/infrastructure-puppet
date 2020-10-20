@@ -433,7 +433,7 @@ def github(cfg, yml):
         # These branches will be stripped of its protection settings at the end.
         enabledProtectedBranches = getEnabledProtectedBranchList(GH_TOKEN, repo_name, False, False)
 
-        if isinstance(protected_branches, list) and all(isinstance(x, basestring) for x in protected_branches):
+        if isinstance(protected_branches, dict) and all(isinstance(x, basestring) for x in protected_branches):
             # For each defined branch, fetch and format the user-defined settings and submit GH API.
             for pb_branch in protected_branches:
                 pb_branch_data = protected_branches.get(pb_branch)
