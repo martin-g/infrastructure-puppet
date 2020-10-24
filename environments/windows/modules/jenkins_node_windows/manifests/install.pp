@@ -1,21 +1,21 @@
-#/environments/windows/modules/jenkins_slave_windows/manifests/install.pp
+#/environments/windows/modules/jenkins_node_windows/manifests/install.pp
 
-class jenkins_slave_windows::install (
+class jenkins_node_windows::install (
 
-  $ant = $jenkins_slave_windows::params::ant,
-  $chromedriver = $jenkins_slave_windows::params::chromedriver,
-  $geckodriver = $jenkins_slave_windows::params::geckodriver,
-  $gpg4win  = $jenkins_slave_windows::params::gpg4win,
-  $gradle = $jenkins_slave_windows::params::gradle,
-  $graphviz = $jenkins_slave_windows::params::graphviz,
-  $iedriver = $jenkins_slave_windows::params::iedriver,
-  $jdk = $jenkins_slave_windows::params::jdk,
-  $maven = $jenkins_slave_windows::params::maven,
-  $nant = $jenkins_slave_windows::params::nant,
-  $forrest = $jenkins_slave_windows::params::forrest,
+  $ant = $jenkins_node_windows::params::ant,
+  $chromedriver = $jenkins_node_windows::params::chromedriver,
+  $geckodriver = $jenkins_node_windows::params::geckodriver,
+  $gpg4win  = $jenkins_node_windows::params::gpg4win,
+  $gradle = $jenkins_node_windows::params::gradle,
+  $graphviz = $jenkins_node_windows::params::graphviz,
+  $iedriver = $jenkins_node_windows::params::iedriver,
+  $jdk = $jenkins_node_windows::params::jdk,
+  $maven = $jenkins_node_windows::params::maven,
+  $nant = $jenkins_node_windows::params::nant,
+  $forrest = $jenkins_node_windows::params::forrest,
 ) {
 
-  include jenkins_slave_windows::params
+  include jenkins_node_windows::params
   #### Install winSVN ####
   package { 'CMake':
     ensure => present,

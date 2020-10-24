@@ -1,6 +1,6 @@
-#/environments/windows/modules/jenkins_slave_windows/manifests/init.pp
+#/environments/windows/modules/jenkins_node_windows/manifests/init.pp
 
-class jenkins_slave_windows (
+class jenkins_node_windows (
 
   $user_password    = '',
   $ant = [],
@@ -48,10 +48,10 @@ class jenkins_slave_windows (
     ensure => directory
   }
 
-  include jenkins_slave_windows::params
+  include jenkins_node_windows::params
 
-  class {'jenkins_slave_windows::download': }
-  -> class {'jenkins_slave_windows::install': }
+  class {'jenkins_node_windows::download': }
+  -> class {'jenkins_node_windows::install': }
 
 ################### create symlinks #############################
   exec { 'create symlink for CMake':
@@ -185,11 +185,15 @@ class jenkins_slave_windows (
   file { 'gitconfig':
     ensure  => present,
     path    => 'C:\\ProgramData\\Git\\config',
-    content => template ('jenkins_slave_windows/gitconfig.txt.erb'),
+    content => template ('jenkins_node_windows/gitconfig.txt.erb'),
   }
 
   file { 'C:/Users/Jenkins/.m2/settings.xml':
-    content => template ('jenkins_slave_windows/settings.xml.erb'),
+    content => template ('jenkins_node_windows/settings.xml.erb'),
+  }
+
+  file { 'C:/Users/Jenkins/.m2/toolchains.xml':
+    source => 'puppet:///modules/jenkins_node_windows/toolchains.xml',
   }
 
   exec { 'set JAVA_HOME':
