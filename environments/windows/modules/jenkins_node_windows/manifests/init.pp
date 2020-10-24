@@ -192,6 +192,10 @@ class jenkins_slave_windows (
     content => template ('jenkins_slave_windows/settings.xml.erb'),
   }
 
+  file { 'C:/Users/Jenkins/.m2/toolchains.xml':
+    source => 'puppet:///modules/jenkins_node_windows/toolchains.xml',
+  }
+
   exec { 'set JAVA_HOME':
     command => "c:\Windows\System32\cmd.exe /c setx JAVA_HOME \"F:\\jenkins\\tools\\java\\latest\"",
   }
