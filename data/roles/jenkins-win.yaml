@@ -1,5 +1,5 @@
 classes_windows:
-  - jenkins_slave_windows
+  - jenkins_node_windows
 
 datadog_agent::tags:
   - 'monitor:build_node'
