@@ -1,6 +1,6 @@
-#/environments/windows/modules/jenkins_slave_windows/manifests/params.pp
+#/environments/windows/modules/jenkins_node_windows/manifests/params.pp
 
-class jenkins_slave_windows::params (
+class jenkins_node_windows::params (
 
   $user_password    = '',
   $ant = ['apache-ant-1.9.13','apache-ant-1.8.4','apache-ant-1.10.5'], # lint:ignore:140chars
