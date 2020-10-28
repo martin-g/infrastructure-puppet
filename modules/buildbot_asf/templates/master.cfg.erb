@@ -103,18 +103,6 @@ c['slaves'] = [BuildSlave("asf947_ubuntu", private.asf947_ubuntuPwd,
                           max_builds=2,
                           ),
 
-# Quenda Hosted Slaves
-
-               BuildSlave("bb_qnode6_ubuntu", private.bb_qnode6_ubuntuPwd,
-                          notify_on_missing="users@infra.apache.org",
-                          missing_timeout=300,
-                          max_builds=2,
-                          ),
-               BuildSlave("bb_qnode7_ubuntu", private.bb_qnode7_ubuntuPwd,
-                          notify_on_missing="users@infra.apache.org",
-                          missing_timeout=300,
-                          max_builds=2,
-                          ),
               ]
 
 # to limit to two concurrent builds on a slave, use
