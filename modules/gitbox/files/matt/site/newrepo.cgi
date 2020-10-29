@@ -252,7 +252,7 @@ def main():
 
 
                     # Notify infra@ about this!
-                    msg = MIMEText("New repository %s.git creation requested by %s FAILED: \n\n%s" % (reponame, os.environ['REMOTE_USER'], e['message']))
+                    msg = MIMEText("New repository %s.git creation requested by %s FAILED: \n\n%s" % (reponame, os.environ['REMOTE_USER'], e.output))
                     msg['Subject'] = 'New gitbox/github repository failed: %s.git' % reponame
                     msg['From'] = "git@apache.org"
                     msg['Reply-To'] = "private@infra.apache.org"
