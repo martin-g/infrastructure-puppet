@@ -54,7 +54,7 @@ def options():
         op.make_option('-d', '--description', metavar="DESC", dest='desc',
             help="A short project description. ie, 'Apache Jackrabbit'"),
         op.make_option('-c', '--commit', metavar="COMMIT", dest='commit',
-            help="Commits email address. ie, 'commits@foo.apache.org'")
+            help="Commits email address. ie, 'commits@foo.apache.org'"),
         op.make_option('-b', '--branch', metavar="BRANCH", dest='branch',
             help="Default branch to set, e.g. master or main etc")
     ]
