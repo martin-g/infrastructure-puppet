@@ -223,16 +223,16 @@ def pelican(cfg, yml):
     s.post('https://ci2.apache.org/api/v2/forceschedulers/pelican_websites', json = payload)
     print("Done!")
 
-GH_BRANCH_PROTECTION_URL_TPL = 'https://api.github.com/repos/apache/%s/branches/%s/protection?access_token=%s'
+GH_BRANCH_PROTECTION_URL_TPL = 'https://api.github.com/repos/apache/%s/branches/%s/protection'
 GH_BRANCH_PROTECTION_URL_ACCEPT = 'application/vnd.github.luke-cage-preview+json'
 
 def getEnabledProtectedBranchList (GH_TOKEN, repo_name, url, isLast):
     if url:
-        REQ_URL = '%s?access_token=%s' % (url, GH_TOKEN)
+        REQ_URL = url
     else:
-        REQ_URL = 'https://api.github.com/repos/apache/%s/branches?protected=true&access_token=%s' % (repo_name, GH_TOKEN)
-
-    response = requests.get(REQ_URL)
+        REQ_URL = 'https://api.github.com/repos/apache/%s/branches?protected=true' % repo_name
+    headers = { "Authorization": "token %s" % GH_TOKEN }
+    response = requests.get(REQ_URL, headers=headers)
 
     branchCollection = []
     for branch in response.json():
@@ -245,8 +245,8 @@ def getEnabledProtectedBranchList (GH_TOKEN, repo_name, url, isLast):
     return branchCollection
 
 def setProtectedBranch (GH_TOKEN, cfg, branch, required_status_checks, required_pull_request_reviews):
-    REQ_URL = GH_BRANCH_PROTECTION_URL_TPL % (cfg.repo_name, branch, GH_TOKEN)
-    response = requests.put(REQ_URL, headers = {'Accept': GH_BRANCH_PROTECTION_URL_ACCEPT}, json = {
+    REQ_URL = GH_BRANCH_PROTECTION_URL_TPL % (cfg.repo_name, branch)
+    response = requests.put(REQ_URL, headers = {'Accept': GH_BRANCH_PROTECTION_URL_ACCEPT, "Authorization": "token %s" % GH_TOKEN}, json = {
         'enforce_admins': None,
         'restrictions': None,
         'required_status_checks': required_status_checks,
@@ -270,8 +270,9 @@ def setProtectedBranch (GH_TOKEN, cfg, branch, required_status_checks, required_
     return response
 
 def removeProtectedBranch (GH_TOKEN, cfg, branch):
-    REQ_URL = GH_BRANCH_PROTECTION_URL_TPL % (cfg.repo_name, branch, GH_TOKEN)
-    response = requests.delete(REQ_URL)
+    REQ_URL = GH_BRANCH_PROTECTION_URL_TPL % (cfg.repo_name, branch)
+    headers = {"Authorization": "token %s" % GH_TOKEN}
+    response = requests.delete(REQ_URL, headers=headers)
     json = response.json()
 
     if response.status_code != 200:
@@ -290,17 +291,17 @@ def removeProtectedBranch (GH_TOKEN, cfg, branch):
     return response
 
 def setProtectedBranchRequiredSignature (GH_TOKEN, cfg, pb_branch, required_signatures):
-    REQ_URL = 'https://api.github.com/repos/apache/%s/branches/%s/protection/required_signatures?access_token=%s' % (cfg.repo_name, pb_branch, GH_TOKEN)
+    REQ_URL = 'https://api.github.com/repos/apache/%s/branches/%s/protection/required_signatures' % (cfg.repo_name, pb_branch)
     ACCEPT_HEADER = 'application/vnd.github.zzzax-preview+json'
-
+    
     if type(required_signatures) is not bool:
         required_signatures = False
         print('The GitHub protected branch setting "required_signatures" contains an invalid value. It will be set to "False"')
 
     if required_signatures:
-        response = requests.post(REQ_URL, headers = {'Accept': ACCEPT_HEADER})
+        response = requests.post(REQ_URL, headers = {'Accept': ACCEPT_HEADER, "Authorization": "token %s" % GH_TOKEN})
     else:
-        response = requests.delete(REQ_URL, headers = {'Accept': ACCEPT_HEADER})
+        response = requests.delete(REQ_URL, headers = {'Accept': ACCEPT_HEADER, "Authorization": "token %s" % GH_TOKEN})
 
     json = response.json()
 
