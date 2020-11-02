@@ -486,16 +486,16 @@ def github(cfg, yml):
 
         # GitHub Pages?
         if ghp_branch:
-            GHP_URL = 'https://api.github.com/repos/apache/%s/pages?access_token=%s' % (cfg.repo_name, GH_TOKEN)
+            GHP_URL = 'https://api.github.com/repos/apache/%s/pages' % cfg.repo_name
             # Test if GHP is enabled already
-            rv = requests.get(GHP_URL, headers = {'Accept': 'application/vnd.github.switcheroo-preview+json'})
+            rv = requests.get(GHP_URL, headers = {"Authorization": "token %s" % GH_TOKEN, 'Accept': 'application/vnd.github.switcheroo-preview+json'})
             
             # Not enabled yet, enable?!
             if rv.status_code == 404:
                 try:
                     rv = requests.post(
                         GHP_URL,
-                        headers = {'Accept': 'application/vnd.github.switcheroo-preview+json'},
+                        headers = {"Authorization": "token %s" % GH_TOKEN, 'Accept': 'application/vnd.github.switcheroo-preview+json'},
                         json = {
                             'source': {
                                 'branch': ghp_branch,
