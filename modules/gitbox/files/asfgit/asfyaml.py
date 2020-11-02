@@ -252,12 +252,12 @@ def setProtectedBranch (GH_TOKEN, cfg, branch, required_status_checks, required_
         'required_status_checks': required_status_checks,
         'required_pull_request_reviews': required_pull_request_reviews
     })
-    json = response.json()
 
     if response.status_code != 200:
+        js = response.json()
         raise Exception(
             "[GitHub] Request error with message: \"%s\". (status code: %s)" % (
-                json.get("message"),
+                js.get("message"),
                 response.status_code
             )
         )
@@ -273,12 +273,12 @@ def removeProtectedBranch (GH_TOKEN, cfg, branch):
     REQ_URL = GH_BRANCH_PROTECTION_URL_TPL % (cfg.repo_name, branch)
     headers = {"Authorization": "token %s" % GH_TOKEN}
     response = requests.delete(REQ_URL, headers=headers)
-    json = response.json()
 
     if response.status_code != 200:
+        js = response.json()
         raise Exception(
             "[GitHub] Request error with message: \"%s\". (status code: %s)" % (
-                json.get("message"),
+                js.get("message"),
                 response.status_code
             )
         )
@@ -303,12 +303,11 @@ def setProtectedBranchRequiredSignature (GH_TOKEN, cfg, pb_branch, required_sign
     else:
         response = requests.delete(REQ_URL, headers = {'Accept': ACCEPT_HEADER, "Authorization": "token %s" % GH_TOKEN})
 
-    json = response.json()
-
     if response.status_code != 200:
+        js = response.json()
         raise Exception(
             "[GitHub] Request error with message: \"%s\". (status code: %s)" % (
-                json.get("message"),
+                js.get("message"),
                 response.status_code
             )
         )
