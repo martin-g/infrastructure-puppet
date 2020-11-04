@@ -253,7 +253,7 @@ def setProtectedBranch (GH_TOKEN, cfg, branch, required_status_checks, required_
         'required_pull_request_reviews': required_pull_request_reviews
     })
 
-    if 200 <= response.status_code < 300:
+    if not (200 <= response.status_code < 300):
         js = response.json()
         raise Exception(
             "[GitHub] Request error with message: \"%s\". (status code: %s)" % (
@@ -274,7 +274,7 @@ def removeProtectedBranch (GH_TOKEN, cfg, branch):
     headers = {"Authorization": "token %s" % GH_TOKEN}
     response = requests.delete(REQ_URL, headers=headers)
 
-    if 200 <= response.status_code < 300:
+    if not (200 <= response.status_code < 300):
         js = response.json()
         raise Exception(
             "[GitHub] Request error with message: \"%s\". (status code: %s)" % (
@@ -303,7 +303,7 @@ def setProtectedBranchRequiredSignature (GH_TOKEN, cfg, pb_branch, required_sign
     else:
         response = requests.delete(REQ_URL, headers = {'Accept': ACCEPT_HEADER, "Authorization": "token %s" % GH_TOKEN})
 
-    if 200 <= response.status_code < 300:
+    if not (200 <= response.status_code < 300):
         js = response.json()
         raise Exception(
             "[GitHub] Request error with message: \"%s\". (status code: %s)" % (
