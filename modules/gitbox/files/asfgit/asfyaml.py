@@ -479,9 +479,11 @@ def github(cfg, yml):
                 )
 
         # Here is where the remaining branches as considered invalid/old branches with protection and will be removed.
+        # This requires that protected_branches is set to none (~), see INFRA-21073 for why.
         # The cleanup process
-        for branch_to_disable_protection in enabledProtectedBranches:
-            removeProtectedBranch(GH_TOKEN, cfg, branch_to_disable_protection)
+        if 'protected_branches' in yml:
+            for branch_to_disable_protection in enabledProtectedBranches:
+                removeProtectedBranch(GH_TOKEN, cfg, branch_to_disable_protection)
 
         # GitHub Pages?
         if ghp_branch:
