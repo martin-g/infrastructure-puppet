@@ -93,6 +93,12 @@ class mboxer (
       provider  => aliases,
       notify    => Exec['newaliases'],
       recipient => "|python3 ${install_base}/tools/archive.py --lid president@apache.org private";
+    'scanned':
+      ensure    => present,
+      name      => 'scanned',
+      provider  => aliases,
+      notify    => Exec['newaliases'],
+      recipient => "|python3 ${install_base}/tools/archive.py --lid scanned@apache.org restricted";
     'secretary':
       ensure    => present,
       name      => 'secretary',
