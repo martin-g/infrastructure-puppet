@@ -48,7 +48,7 @@
       <vendor>oracle</vendor>
     </provides>
     <configuration>
-      <jdkHome>F:\\jenkins\\tools\\java\\latest9\\</jdkHome>
+      <jdkHome>F:\\jenkins\\tools\\java\\latest1.9\\</jdkHome>
     </configuration>
   </toolchain>
   <toolchain>
@@ -111,7 +111,6 @@
       <jdkHome>F:\\jenkins\\tools\\java\\latest15\\</jdkHome>
     </configuration>
   </toolchain>
-  <!--
   <toolchain>
     <type>jdk</type>
     <provides>
@@ -122,5 +121,4 @@
       <jdkHome>F:\\jenkins\\tools\\java\\latest16\\</jdkHome>
     </configuration>
   </toolchain>
-  -->
 </toolchains>
