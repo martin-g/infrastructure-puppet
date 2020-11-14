@@ -447,6 +447,7 @@ build_slaves::jenkins::jenkins_packages:
   - asf-build-openjdk14-ea+1
   - asf-build-openjdk14-ea+10
   - asf-build-openjdk15-ea+11
+  - asf-build-openjdk16-ea+24
 
 # Not all build slaves. This is just for Jenkins slaves.
 build_slaves::distro_packages:
