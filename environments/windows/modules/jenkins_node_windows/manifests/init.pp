@@ -100,7 +100,7 @@ class jenkins_node_windows (
     provider => powershell,
   }
   exec { 'create symlink for JDK16':
-    command  => "cmd /c rmdir F:\\jenkins\\tools\\java\\latest16 \"&\" mklink /d F:\\jenkins\\tools\\java\\latest16 F:\\jenkins\\tools\\java\\openjdk16-ea+23",# lint:ignore:140chars
+    command  => "cmd /c rmdir F:\\jenkins\\tools\\java\\latest16 \"&\" mklink /d F:\\jenkins\\tools\\java\\latest16 F:\\jenkins\\tools\\java\\openjdk16-ea+24",# lint:ignore:140chars
     onlyif   => "if ((Get-Item F:\\tools_zips).LastWriteTime -lt (Get-Date).AddMinutes(-60)) { exit 1;}  else { exit 0; }",
     provider => powershell,
   }

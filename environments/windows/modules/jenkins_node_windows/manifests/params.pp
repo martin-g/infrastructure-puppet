@@ -10,7 +10,7 @@ class jenkins_node_windows::params (
   $gradle = ['3.5','4.3','4.3.1'],
   $graphviz = ['2.38'],
   $iedriver = ['2.53.1','3.4.0'],
-  $jdk = ['jdk1.5.0_22-32','jdk1.5.0_22-64','jdk1.6.0_30','jdk1.7.0_79-unlimited-security','jdk1.8.0_152','jdk1.8.0_252+b09','jdk9.0','jdk9.0.1','jdk10_46','jdk11-ea+28','jdk12-ea+33','jdk13-ea+30','jdk14-ea+6','jdk15-ea+13','openjdk16-ea+23'], # lint:ignore:140chars
+  $jdk = ['jdk1.5.0_22-32','jdk1.5.0_22-64','jdk1.6.0_30','jdk1.7.0_79-unlimited-security','jdk1.8.0_152','jdk1.8.0_252+b09','jdk9.0','jdk9.0.1','jdk10_46','jdk11-ea+28','jdk12-ea+33','jdk13-ea+30','jdk14-ea+6','jdk15-ea+13','openjdk16-ea+23','openjdk16-ea+24'], # lint:ignore:140chars
   $maven = ['apache-maven-2.0.10','apache-maven-2.0.9','apache-maven-2.2.1','apache-maven-3.0.2','apache-maven-3.0.4','apache-maven-3.0.5','apache-maven-3.1.1','apache-maven-3.2.5','apache-maven-3.3.9','apache-maven-3.5.4','apache-maven-3.6.0','apache-maven-3.6.2','apache-maven-3.6.3'], # lint:ignore:140chars
   $nant = ['0.92'],
   $forrest = ['0.9'],
