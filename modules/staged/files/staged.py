@@ -152,8 +152,10 @@ def listen():
                     if PUBLISH:
                         deploydir = "%s.apache.org" % project
                         # Hardcoded hostnames (aoo etc):
-                        if 'hostname' in obj[what]:
-                            deploydir = obj[what].get('hostname')
+                        if 'target' in obj[what]:
+                            hostdir = obj[what].get('target')
+                            if hostdir:
+                                deploydir = hostdir  # Only if not empty value
                     
                     if (deploydir and source and branch):
                         if subdir and re.match(r"^[-_a-zA-Z0-9/]+$", subdir):                            
