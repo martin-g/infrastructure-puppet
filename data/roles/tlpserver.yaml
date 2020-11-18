@@ -216,7 +216,7 @@ apache::custom_config:
   aoo:
     content: |
       <Macro OpenOffice $proto>
-        DocumentRoot /var/www/ooo-site.apache.org/content
+        DocumentRoot /var/www/www.openoffice.org/content
         ServerName www.openoffice.org
         ServerAlias ooo-site.apache.org
         ServerAlias *.openoffice.org
@@ -244,7 +244,7 @@ apache::custom_config:
 
         RewriteEngine On
         RewriteOptions inherit
-        RewriteRule ^/favicon\.ico$ /www/ooo-site.apache.org/content/favicon.ico [L]
+        RewriteRule ^/favicon\.ico$ /www/www.openoffice.org/content/favicon.ico [L]
 
         RewriteMap lowercase int:tolower
 
@@ -280,13 +280,13 @@ apache::custom_config:
 
         # change foo.openoffice.org/... to www.openoffice.org/foo/... if foo dir exists
         RewriteCond ${lowercase:%%{}{HTTP_HOST}} ^(\w+)(?:\.\w+)?\.openoffice\.org$
-        RewriteCond /var/www/ooo-site.apache.org/content/%1 -d
+        RewriteCond /var/www/www.openoffice.org/content/%1 -d
         RewriteRule ^(.*)$ ${lowercase:%%{}{HTTP_HOST}}$1 [C]
         RewriteRule ^(\w+)(?:\.\w+)?\.openoffice\.org/(.*) $proto://www.openoffice.org/$1/$2 [NE,L,R=permanent]
 
         # change *.openoffice.org/?lang=foo to www.openoffice.org/foo/
         RewriteCond ${lowercase:%%{}{QUERY_STRING}} lang=([a-z\-]+)
-        RewriteCond /var/www/ooo-site.apache.org/content/%1 -d
+        RewriteCond /var/www/www.openoffice.org/content/%1 -d
         RewriteRule .* $proto://www.openoffice.org/%1? [NE,L,R=permanent]
 
         # fallback for proj.openoffice.org/... to openoffice.org/projects/proj/...
@@ -350,7 +350,7 @@ vhosts_asf::vhosts::vhosts:
           - 'ExecCGI'
         allow_override:
           - 'All'
-        path: '/www/ooo-site.apache.org/content'
+        path: '/www/www.openoffice.org/content'
         options:
           - 'Indexes'
           - 'FollowSymLinks'
