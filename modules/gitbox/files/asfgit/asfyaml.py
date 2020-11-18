@@ -599,7 +599,7 @@ def publish(cfg, yml):
     ref = yml.get('refname', 'master').replace('refs/heads/', '')
     
     # Get optional target domain:
-    target = yml.get('hostname', pname)
+    target = yml.get('hostname', '')
     if 'apache.org' in target:
         raise Exception(".asf.yaml: Invalid hostname '%s' - you cannot specify *.apache.org hostnames, they must be inferred!" % target)
     
