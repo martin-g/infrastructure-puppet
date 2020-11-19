@@ -81,6 +81,12 @@ class mboxer (
       provider  => aliases,
       notify    => Exec['newaliases'],
       recipient => "|python3 ${install_base}/tools/archive.py --lid ea@apache.org private";
+    'treasurer-notifications':
+      ensure    => present,
+      name      => 'notifications',
+      provider  => aliases,
+      notify    => Exec['newaliases'],
+      recipient => "|python3 ${install_base}/tools/archive.py --lid notifications@treasurer.apache.org restricted";
     'pmc-chairs':
       ensure    => present,
       name      => 'pmc-chairs',
@@ -93,6 +99,12 @@ class mboxer (
       provider  => aliases,
       notify    => Exec['newaliases'],
       recipient => "|python3 ${install_base}/tools/archive.py --lid president@apache.org private";
+    'treasurer-private':
+      ensure    => present,
+      name      => 'private',
+      provider  => aliases,
+      notify    => Exec['newaliases'],
+      recipient => "|python3 ${install_base}/tools/archive.py --lid private@treasurer.apache.org restricted";
     'scanned':
       ensure    => present,
       name      => 'scanned',
@@ -111,6 +123,12 @@ class mboxer (
       provider  => aliases,
       notify    => Exec['newaliases'],
       recipient => "|python3 ${install_base}/tools/archive.py --lid treasurer@apache.org private";
+    'treasurer-team':
+      ensure    => present,
+      name      => 'team',
+      provider  => aliases,
+      notify    => Exec['newaliases'],
+      recipient => "|python3 ${install_base}/tools/archive.py --lid team@treasurer.apache.org restricted";
     'vp-brand':
       ensure    => present,
       name      => 'vp-brand',
