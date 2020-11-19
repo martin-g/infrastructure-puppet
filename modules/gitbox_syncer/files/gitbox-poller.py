@@ -30,6 +30,8 @@ import contextlib
 import yaml
 import requests
 
+SEEN = []
+
 # GitHub -> GitBox code sync    
 def parse_payload(config, data):
     repo_dirs = config['paths']
@@ -140,6 +142,15 @@ def parse_payload(config, data):
         baseref = data['base_ref'] if 'base_ref' in data else data['master_branch'] if 'master_branch' in data else data['ref']
         before = data.get('before', EMPTY_HASH)
         after = data.get('after', EMPTY_HASH)
+        
+        # GitHub may send duplicate webhooks for the same push (for reasons unknown!), so dedup here.
+        if reponame and ref and before and after:
+            seen_hash = "%s-%s-%s-%s" % (reponame, ref, before, after)  # kibble-newbranch-0000000000000000-fa676777662783462 or such
+            if seen_hash in SEEN:
+                return
+            else:
+                SEEN.append(seen_hash)
+        
         force_diff = False
         merge_from_fork = False
         if 'commits' in data and data['commits']:
