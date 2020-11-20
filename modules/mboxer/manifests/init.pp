@@ -83,7 +83,7 @@ class mboxer (
       recipient => "|python3 ${install_base}/tools/archive.py --lid ea@apache.org private";
     'treasurer-notifications':
       ensure    => present,
-      name      => 'notifications',
+      name      => 'treasurer-notifications',
       provider  => aliases,
       notify    => Exec['newaliases'],
       recipient => "|python3 ${install_base}/tools/archive.py --lid notifications@treasurer.apache.org restricted";
@@ -101,7 +101,7 @@ class mboxer (
       recipient => "|python3 ${install_base}/tools/archive.py --lid president@apache.org private";
     'treasurer-private':
       ensure    => present,
-      name      => 'private',
+      name      => 'treasurer-private',
       provider  => aliases,
       notify    => Exec['newaliases'],
       recipient => "|python3 ${install_base}/tools/archive.py --lid private@treasurer.apache.org restricted";
@@ -125,7 +125,7 @@ class mboxer (
       recipient => "|python3 ${install_base}/tools/archive.py --lid treasurer@apache.org private";
     'treasurer-team':
       ensure    => present,
-      name      => 'team',
+      name      => 'treasurer-team',
       provider  => aliases,
       notify    => Exec['newaliases'],
       recipient => "|python3 ${install_base}/tools/archive.py --lid team@treasurer.apache.org restricted";
