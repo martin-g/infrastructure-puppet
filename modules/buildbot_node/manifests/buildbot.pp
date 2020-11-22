@@ -1,9 +1,9 @@
-#/etc/puppet/modules/buildbot_slave/manifests/buildbot.pp
+#/etc/puppet/modules/buildbot_node/manifests/buildbot.pp
 
 include apt
 
 # buildbot class for the buildbot slaves.
-class buildbot_slave::buildbot (
+class buildbot_node::buildbot (
   $buildbot_packages = [],
   $ant = [
     'apache-ant-1.8.4',
@@ -93,7 +93,7 @@ class buildbot_slave::buildbot (
 ) {
 
   require stdlib
-  require buildbot_slave
+  require buildbot_node
 
   #hax to get apt to update
   exec { 'update':
@@ -101,7 +101,7 @@ class buildbot_slave::buildbot (
   }
 
   #define all symlink making iterators
-  define buildbot_slave::mkdir_tools ($tool = $title) {
+  define buildbot_node::mkdir_tools ($tool = $title) {
     file {"/home/buildslave/slave/tools/${tool}":
       ensure => directory,
       owner  => 'buildslave',
@@ -118,7 +118,7 @@ class buildbot_slave::buildbot (
   }
 
   #define maven symlinking (installs to /usr/local/asfpackages)
-  define buildbot_slave::symlink_maven ($maven_version = $title) {
+  define buildbot_node::symlink_maven ($maven_version = $title) {
     file {"/home/buildslave/slave/tools/maven/${maven_version}":
       ensure => link,
       target => "/usr/local/asfpackages/maven/${maven_version}",
@@ -126,7 +126,7 @@ class buildbot_slave::buildbot (
   }
 
   #define java symlinking
-  define buildbot_slave::symlink_asfpackages ($javaa = $title) {
+  define buildbot_node::symlink_asfpackages ($javaa = $title) {
     file {"/home/buildslave/slave/tools/java/${javaa}":
       ensure => link,
       target => "/usr/local/asfpackages/java/${javaa}",
@@ -141,7 +141,7 @@ class buildbot_slave::buildbot (
   }
 
   # populate /home/buildslave/slave/tools/ with asf_packages types
-  -> buildbot_slave::mkdir_tools { $tools: }
+  -> buildbot_node::mkdir_tools { $tools: }
 
   package { $buildbot_packages:
     ensure => latest,
@@ -163,7 +163,7 @@ class buildbot_slave::buildbot (
   }
 
   # maven symlinks - populate array, make all symlinks, make latest symlink
-  buildbot_slave::symlink_maven        { $maven: }
+  buildbot_node::symlink_maven        { $maven: }
   file { '/home/buildslave/slave/tools/maven/latest2':
     ensure => link,
     target => '/usr/local/asfpackages/maven/apache-maven-2.2.1',
@@ -178,7 +178,7 @@ class buildbot_slave::buildbot (
   }
 
   # java symlinks - old java location, new java location, and latest symlinks
-  buildbot_slave::symlink_asfpackages  { $java_asfpackages: }
+  buildbot_node::symlink_asfpackages  { $java_asfpackages: }
   file { '/home/buildslave/slave/tools/java/latest':
     ensure => link,
     target => '/usr/local/asfpackages/java/jdk1.8.0_191',

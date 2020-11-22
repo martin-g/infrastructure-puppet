@@ -1,6 +1,6 @@
-##/etc/puppet/modules/buildbot_slave/manifests/init.pp
+##/etc/puppet/modules/buildbot_node/manifests/init.pp
 
-class buildbot_slave (
+class buildbot_node (
 
   $group_present     = 'present',
   $groupname         = 'buildslave',
@@ -25,7 +25,7 @@ class buildbot_slave (
 
   $slave_dir = "/home/${username}/slave"
 
-  include buildbot_slave::buildbot
+  include buildbot_node::buildbot
 
   # install gradle PPA and gradle 2.x
 
@@ -37,13 +37,13 @@ class buildbot_slave (
   }
 
   # define gradle symlinking.
-  define buildbot_slaves::symlink_gradle ($versions = $title) {
+  define buildbot_nodes::symlink_gradle ($versions = $title) {
     package {"gradle-${versions}":
       ensure => latest,
     }
   }
 
-  buildbot_slaves::symlink_gradle { $gradle_versions: }
+  buildbot_nodes::symlink_gradle { $gradle_versions: }
 
 
 
@@ -53,7 +53,7 @@ class buildbot_slave (
 
   # merge required packages from hiera for slaves
 
-  $slave_packages = hiera_array('buildbot_slave::required_packages',[])
+  $slave_packages = hiera_array('buildbot_node::required_packages',[])
 
   package {
     $bb_basepackages:
@@ -105,14 +105,14 @@ class buildbot_slave (
 
   -> file {
     "/home/${username}/.git-credentials":
-      content => template('buildbot_slave/git-credentials.erb'),
+      content => template('buildbot_node/git-credentials.erb'),
       mode    => '0640',
       owner   => $username,
       group   => $groupname;
 
     "/home/${username}/.gitconfig":
       ensure => 'present',
-      source => 'puppet:///modules/buildbot_slave/gitconfig',
+      source => 'puppet:///modules/buildbot_node/gitconfig',
       mode   => '0644',
       owner  => $username,
       group  => $groupname;
@@ -137,7 +137,7 @@ class buildbot_slave (
       owner   => $username,
       group   => $groupname,
       mode    => '0640',
-      source  => 'puppet:///modules/buildbot_slave/.puppet-lint.rc';
+      source  => 'puppet:///modules/buildbot_node/.puppet-lint.rc';
 
     "/home/${username}/.m2/settings.xml":
       require => File["/home/${username}/.m2"],
@@ -145,7 +145,7 @@ class buildbot_slave (
       owner   => $username,
       group   => $groupname,
       mode    => '0640',
-      content => template('buildbot_slave/m2_settings.erb');
+      content => template('buildbot_node/m2_settings.erb');
 
     "/home/${username}/.m2/toolchains.xml":
       require => File["/home/${username}/.m2"],
@@ -153,7 +153,7 @@ class buildbot_slave (
       owner   => $username,
       group   => $groupname,
       mode    => '0640',
-      source  => 'puppet:///modules/buildbot_slave/toolchains.xml';
+      source  => 'puppet:///modules/buildbot_node/toolchains.xml';
 
     "/home/${username}/.gradle/gradle.properties":
       require => File["/home/${username}/.gradle"],
@@ -161,7 +161,7 @@ class buildbot_slave (
       owner   => $username,
       group   => $groupname,
       mode    => '0640',
-      content => template('buildbot_slave/gradle_properties.erb');
+      content => template('buildbot_node/gradle_properties.erb');
 
     "/home/${username}/.ssh":
       ensure  => directory,
@@ -176,7 +176,7 @@ class buildbot_slave (
       owner   => $username,
       group   => $groupname,
       mode    => '0640',
-      source  => 'puppet:///modules/buildbot_slave/ssh/config';
+      source  => 'puppet:///modules/buildbot_node/ssh/config';
 
     "/home/${username}/slave":
       ensure  => directory,
@@ -185,29 +185,29 @@ class buildbot_slave (
       require => Exec['bootstrap-buildslave'];
 
     "/home/${username}/slave/buildbot.tac":
-      content => template('buildbot_slave/buildbot.tac.erb'),
+      content => template('buildbot_node/buildbot.tac.erb'),
       mode    => '0644',
       require => Exec['bootstrap-buildslave'];
 
     "/home/${username}/slave/private.py":
-      content => template('buildbot_slave/private.py.erb'),
+      content => template('buildbot_node/private.py.erb'),
       owner   => $username,
       mode    => '0640',
       require => Exec['bootstrap-buildslave'];
 
     "/home/${username}/slave/info/host":
-      content => template('buildbot_slave/host.erb'),
+      content => template('buildbot_node/host.erb'),
       mode    => '0644',
       require => Exec['bootstrap-buildslave'];
 
     "/home/${username}/slave/info/admin":
-      content => template('buildbot_slave/admin.erb'),
+      content => template('buildbot_node/admin.erb'),
       mode    => '0644',
       require => Exec['bootstrap-buildslave'];
   }
 
   ::systemd::unit_file { 'buildslave.service':
-      content => template('buildbot_slave/buildslave.service.erb'),
+      content => template('buildbot_node/buildslave.service.erb'),
 }
 
 }
