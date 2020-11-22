@@ -1,11 +1,11 @@
 ---
 classes:
-  - buildbot_slave
+  - buildbot_node
   - loggy
   - rvm
 
-buildbot_slave::slave_name: 'bb_slave1_ubuntu'
-buildbot_slave::required_packages:
+buildbot_node::slave_name: 'bb_slave1_ubuntu'
+buildbot_node::required_packages:
   - 'graphviz'
   - 'graphviz-dev'
   - 'libtool'
