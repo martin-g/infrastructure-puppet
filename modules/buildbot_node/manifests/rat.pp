@@ -1,14 +1,14 @@
-#/etc/puppet/modules/buildbot_slaves/manifests/rat.pp
+#/etc/puppet/modules/buildbot_nodes/manifests/rat.pp
 
   # class for the buildbot slaves making rat reports available.
-  class buildbot_slave::rat (
+  class buildbot_node::rat (
 
   $projects = [],
 
 ) {
 
 require stdlib
-require buildbot_slave
+require buildbot_node
 
   $build_version      = '0.12'
   $rat_build          = "apache-rat-${build_version}"
@@ -21,27 +21,27 @@ require buildbot_slave
   file {
     '/home/buildslave/slave/rat-buildfiles':
       ensure  => 'directory',
-      owner   => $buildbot_slave::username,
-      group   => $buildbot_slave::groupname,
+      owner   => $buildbot_node::username,
+      group   => $buildbot_node::groupname,
       mode    => '0755',
-      require => [Group[$buildbot_slave::groupname]];
+      require => [Group[$buildbot_node::groupname]];
     '/home/buildslave/rat-output.xsl':
       ensure => 'present',
-      source => 'puppet:///modules/buildbot_slave/rat-output.xsl',
+      source => 'puppet:///modules/buildbot_node/rat-output.xsl',
       mode   => '0644',
-      owner  => $buildbot_slave::username,
-      group  => $buildbot_slave::groupname;
+      owner  => $buildbot_node::username,
+      group  => $buildbot_node::groupname;
   }
 
   # define buildbot slave project xml directories
-  define buildbot_slave::rats ($project = $title) {
+  define buildbot_node::rats ($project = $title) {
     file {"/home/buildslave/slave/rat-buildfiles//${project}.xml":
       ensure  => present,
-      owner   => $buildbot_slave::username,
-      group   => $buildbot_slave::groupname,
+      owner   => $buildbot_node::username,
+      group   => $buildbot_node::groupname,
       mode    => '0640',
-      source  => "puppet:///modules/buildbot_slave/${project}.xml",
-      require => [Package['ant'],File['/home/buildslave/slave/rat-buildfiles'],Group[$buildbot_slave::groupname]];
+      source  => "puppet:///modules/buildbot_node/${project}.xml",
+      require => [Package['ant'],File['/home/buildslave/slave/rat-buildfiles'],Group[$buildbot_node::groupname]];
     }
   }
 
@@ -70,6 +70,6 @@ require buildbot_slave
       onlyif  => "/usr/bin/test -d ${install_dir}",
   }
 
-  buildbot_slave::rats { $projects: }
+  buildbot_node::rats { $projects: }
 
 }

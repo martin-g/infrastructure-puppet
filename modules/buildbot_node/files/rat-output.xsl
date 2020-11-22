@@ -82,7 +82,7 @@
   </div>
   <hr />
   <p class="intro center">This HTML version is generated using the --stylesheet (-s) option built into RAT. The stylesheet rat-output.xsl is available
-    for Pull Requests at <a href="https://github.com/apache/infrastructure-puppet/blob/deployment/modules/buildbot_slave/files/rat-output.xsl">
+    for Pull Requests at <a href="https://github.com/apache/infrastructure-puppet/blob/deployment/modules/buildbot_node/files/rat-output.xsl">
     our Github Repos</a>.
   </p>
   <xsl:text>  </xsl:text>

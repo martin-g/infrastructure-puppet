@@ -566,7 +566,7 @@ build_slaves::distro_packages:
   - virtualenvwrapper
   - xvfb
 
-buildbot_slave::buildbot::buildbot_packages:
+buildbot_node::buildbot::buildbot_packages:
   - asf-build-apache-ant-1.8.4
   - asf-build-apache-ant-1.9.4
   - asf-build-apache-ant-1.9.7
@@ -640,7 +640,7 @@ buildbot_slave::buildbot::buildbot_packages:
   - asf-build-openjdk14-ea+10
   - asf-build-openjdk15-ea+11
 
-buildbot_slave::bb_basepackages:
+buildbot_node::bb_basepackages:
   - ant
   - apache2-dev
   - autoconf

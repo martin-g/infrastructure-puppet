@@ -1,13 +1,13 @@
 ---
 classes:
   - loggy
-  - buildbot_slave
-  - buildbot_slave::cpan
-  - buildbot_slave::rat
+  - buildbot_node
+  - buildbot_node::cpan
+  - buildbot_node::rat
 
-buildbot_slave::slave_name: 'bb_slave7_ubuntu'
+buildbot_node::slave_name: 'bb_slave7_ubuntu'
 
-buildbot_slave::required_packages:
+buildbot_node::required_packages:
   - 'build-essential'
   - 'libaprutil1-dbd-sqlite3'
   - 'libaprutil1-ldap'
@@ -18,7 +18,7 @@ buildbot_slave::required_packages:
   - 'libxml2-dev'
   - 'zlib1g-dev'
 
-buildbot_slave::cpan::cpan_modules: 
+buildbot_node::cpan::cpan_modules: 
 - 'AnyEvent'
 - 'Crypt::SSLeay'
 - 'DateTime'
@@ -40,7 +40,7 @@ buildbot_slave::cpan::cpan_modules:
 - 'Test::Harness'
 - 'URI'
 
-buildbot_slave::rat::projects:
+buildbot_node::rat::projects:
   - 'jmeter'
 
 python::python_pips:
