@@ -110,7 +110,7 @@ class buildbot_node::buildbot (
   }
 
   #define ant symlinking
-  define build_slaves::symlink_ant ($ant_version = $title) {
+  define buildbot_node::symlink_ant ($ant_version = $title) {
     file {"/home/buildslave/slave/tools/ant/${ant_version}":
       ensure => link,
       target => "/usr/local/asfpackages/ant/${ant_version}",
@@ -148,7 +148,7 @@ class buildbot_node::buildbot (
   }
 
   # ant symlinks - populate array, make all symlinks, make latest symlink
-  build_slaves::symlink_ant          { $ant: }
+  buildbot_node::symlink_ant          { $ant: }
   file { '/home/buildslave/slave/tools/ant/latest1.9':
     ensure => link,
     target => '/usr/local/asfpackages/ant/apache-ant-1.9.13',
