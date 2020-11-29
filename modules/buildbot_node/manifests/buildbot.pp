@@ -84,6 +84,8 @@ class buildbot_node::buildbot (
     'openjdk-14-ea+10',
     'openjdk-15-ea+11',
     'openjdk-16-ea+24',
+    'openjdk-11.0.9+11_openj9-0.23.0',
+    'openjdk-hotspot-11.0.9+11.1',
 ],
   $tools = [
     'ant',
