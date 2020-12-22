@@ -77,18 +77,18 @@ max_emails = int(_git_config("hooks.asfgit.max-emails"))
 extra_writers = _git_config("hooks.asfgit.extra-writers", default='')
 extra_writers = extra_writers.split(',') if extra_writers != '' else []
 
-# Check if repo is bare
-is_bare = False
+# Check if repo is empty
+is_empty = False
 try:
-  is_bare = "true" in run.git('rev-parse', '--is-bare-repository')[1].strip()
-except sp.CalledProcessError as e:  # This can break when repo is bare, beware.
-  pass
+  is_empty = len(run.git('rev-list', '-n1', '--all')[1].strip()) == 0
+except sp.CalledProcessError as e:  # This will break if repo is empty.
+  is_empty = True
 
 # Fetch default branch, default to master is repo is bare or has no default yet.
 default_branch = 'master'
 try:
   default_branch = run.git('symbolic-ref', '--short', 'HEAD')[1].strip()
-except sp.CalledProcessError as e:  # This can break when repo is bare, beware.
+except sp.CalledProcessError as e:  # This can break when repo is empty, beware.
   pass
 
 gitpubsub_host = _git_config("hooks.asfgit.pubsub-host", DEFAULT_PUBSUB_HOST)
