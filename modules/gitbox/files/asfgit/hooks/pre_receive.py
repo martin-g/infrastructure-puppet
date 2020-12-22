@@ -76,7 +76,7 @@ def main():
     refs = []
     has_set_db = False
     for ref in git.stream_refs(sys.stdin):
-        if cfg.is_bare and "infrastructure-reftest" in cfg.repo_name and not has_set_db:
+        if cfg.is_empty and not has_set_db:
             print("First ever branch detected, setting %s as default branch." % ref.name)
             run.git('symbolic-ref', 'HEAD', ref.name)
             has_set_db = True
