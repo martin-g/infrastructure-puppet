@@ -77,6 +77,13 @@ max_emails = int(_git_config("hooks.asfgit.max-emails"))
 extra_writers = _git_config("hooks.asfgit.extra-writers", default='')
 extra_writers = extra_writers.split(',') if extra_writers != '' else []
 
+# Check if repo is bare
+is_bare = False
+try:
+  is_bare = "true" in run.git('rev-parse', '--is-bare-repository')[1].strip()
+except sp.CalledProcessError as e:  # This can break when repo is bare, beware.
+  pass
+
 # Fetch default branch, default to master is repo is bare or has no default yet.
 default_branch = 'master'
 try:
