@@ -74,10 +74,12 @@ def main():
     # our various conditions. Track each ref update
     # so that we can log them if everything is ok.
     refs = []
+    has_set_db = False
     for ref in git.stream_refs(sys.stdin):
-        if cfg.is_bare and "infrastructure-reftest" in cfg.repo_name:
+        if cfg.is_bare and "infrastructure-reftest" in cfg.repo_name and not has_set_db:
             print("First ever branch detected, setting %s as default branch." % ref.name)
             run.git('symbolic-ref', 'HEAD', ref.name)
+            has_set_db = True
         refs.append(ref)
         # Site writer role
         if cfg.committer == "git-site-role" and not re.match(r".*(asf-site|asf-staging.*)$", ref.name):
