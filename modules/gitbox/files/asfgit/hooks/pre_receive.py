@@ -8,6 +8,7 @@ import asfgit.auth as auth
 import asfgit.cfg as cfg
 import asfgit.git as git
 import asfgit.util as util
+import asfgit.run as run
 
 
 WRITE_LOCKED = u"""\
@@ -74,6 +75,9 @@ def main():
     # so that we can log them if everything is ok.
     refs = []
     for ref in git.stream_refs(sys.stdin):
+        if cfg.is_bare and "infrastructure-reftest" in cfg.repo_name:
+            print("First ever branch detected, setting %s as default branch." % ref.name)
+            run.git('symbolic-ref', 'HEAD', ref.name)
         refs.append(ref)
         # Site writer role
         if cfg.committer == "git-site-role" and not re.match(r".*(asf-site|asf-staging.*)$", ref.name):
