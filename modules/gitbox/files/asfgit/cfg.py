@@ -84,6 +84,13 @@ try:
 except sp.CalledProcessError as e:  # This will break if repo is empty.
   is_empty = True
 
+# Whether master branch exists (used for checking if main is default branch)
+has_master_branch = True
+try:
+  run.git('show-ref', 'refs/heads/master')
+except sp.CalledProcessError as e:  # No master branch, exit code 1
+  has_master_branch = False
+
 # Fetch default branch, default to master is repo is bare or has no default yet.
 default_branch = 'master'
 try:
