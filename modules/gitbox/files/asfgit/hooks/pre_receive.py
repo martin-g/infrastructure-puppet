@@ -80,6 +80,11 @@ def main():
             print("First ever branch detected, setting %s as default branch." % ref.name)
             run.git('symbolic-ref', 'HEAD', ref.name)
             has_set_db = True
+        # GitHub != GitBox main/master fixups 'cause gitbox defaults to master and github to main.
+        if not has_set_db and not cfg.has_master_branch and cfg.default_branch == 'master' and ref.name == 'refs/heads/main':
+            print("Main branch detected and no master branch present, setting default branch to main.")
+            run.git('symbolic-ref', 'HEAD', 'refs/heads/main')
+            has_set_db = True
         refs.append(ref)
         # Site writer role
         if cfg.committer == "git-site-role" and not re.match(r".*(asf-site|asf-staging.*)$", ref.name):
