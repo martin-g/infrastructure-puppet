@@ -662,6 +662,7 @@ buildbot_node::bb_basepackages:
   - libapr1-dev
   - libaprutil1
   - libaprutil1-dev
+  - libgdm1
   - libjson-perl
   - libpam0g-dev
   - libserf-1-1
