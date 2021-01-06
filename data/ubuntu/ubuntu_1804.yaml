@@ -643,6 +643,7 @@ buildbot_node::bb_basepackages:
   - libsqlite3-0
   - libsqlite3-dev
   - libssl-dev
+  - libxss-dev
   - maven
   - openjdk-9-jdk
   - pkg-config
