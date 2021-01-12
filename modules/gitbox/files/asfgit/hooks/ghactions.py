@@ -27,10 +27,10 @@ ALL_STRINGS = {}
 
 # Allowed GH Actions
 ALLOWED_ACTIONS = [
-    re.compile(r"^actions/.*"),  # GitHub Common Actions
-    re.compile(r"^github/.*"),  # GitHub's own Action collection
-    re.compile(r"^apache/.*"),  # Apache's action collection
-    re.compile(r"[-a-z0-9]+/[-A-Za-z0-9]+@[a-f0-9]{40}"),  # Any commit-pinned action
+    re.compile(r"^actions/.*$"),  # GitHub Common Actions
+    re.compile(r"^github/.*$"),  # GitHub's own Action collection
+    re.compile(r"^apache/.*$"),  # Apache's action collection
+    re.compile(r"^[-a-z0-9]+/[-A-Za-z0-9]+@([a-f0-9]{7}|[a-f0-9]{40})$"),  # Any commit-pinned action
 ]
 
 
