@@ -90,11 +90,13 @@ def notify_private(cfg, subject, text):
     m = re.match(r"(?:incubator-)?([^-.]+)", cfg.repo_name)
     pname = m.group(1)
     pname = WSMAP.get(pname, pname)
+    #  recps = ["private@%s.apache.org" % pname, "private@infra.apache.org"]
+    recps = ["private@infra.apache.org"]  # For now, send to projets later.
 
     # Tell project what happened, on private@
     asfpy.messaging.mail(
         sender="GitBox Security Scan <gitbox@apache.org>",
-        recipients=["private@%s.apache.org" % pname, "private@infra.apache.org"],
+        recipients=recps,
         subject=subject,
         message=text,
     )
