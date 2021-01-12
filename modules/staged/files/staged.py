@@ -45,7 +45,7 @@ def do_git_pull(path, branch):
     except subprocess.CalledProcessError as e:
         syslog.syslog(syslog.LOG_WARNING, "Could not `git pull` new contents into %s: %s" % (path, e.output))
         # If we hit a merge conflict due to rewritten history (detached tree), try a reset.
-        if b"Merge conflict" in e.output or b"refusing to merge unrelated histories" in e.output:
+        if b"Merge conflict" in e.output or b"refusing to merge unrelated histories" in e.output or b"Please commit your changes or stash them before you merge" in e.output:
             syslog.syslog(syslog.LOG_INFO, "%s has merge conflicts or orphaned head, trying to reset the repository." % path)
             try:
                 subprocess.check_output((GIT_CMD, 'reset', '--hard', 'origin/%s' % branch))
