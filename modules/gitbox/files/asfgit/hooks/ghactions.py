@@ -64,7 +64,7 @@ def get_yaml(filename, refname):
         fdata = None
     if fdata:
         try:
-            stream = io.StringIO(fdata)
+            stream = io.BytesIO(fdata)
             stream.name = filename
             return yaml.safe_load(stream)
         except yaml.YAMLError as e:
