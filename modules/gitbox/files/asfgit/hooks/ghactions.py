@@ -1,6 +1,7 @@
 #!/usr/local/bin/python
 
 import fnmatch
+import io
 import os
 import re
 import subprocess
@@ -63,7 +64,9 @@ def get_yaml(filename, refname):
         fdata = None
     if fdata:
         try:
-            return yaml.safe_load(fdata)
+            stream = io.StringIO(fdata)
+            stream.name = filename
+            return yaml.safe_load(stream)
         except yaml.YAMLError as e:
             pass  # If yaml doesn't work, we do not need to scan it :)
     return None
