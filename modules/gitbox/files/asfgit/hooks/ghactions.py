@@ -112,7 +112,7 @@ def scan_for_problems(yml, filename):
     #  Rule 1: No pull_request_target triggers if secrets are used in the workflow
     if "on" in yml:
         triggers = yml.get("on", [])
-        if isinstance(triggers, list) or isinstance(triggers, dict) and "pull_request_target" in triggers:
+        if (isinstance(triggers, list) or isinstance(triggers, dict)) and "pull_request_target" in triggers:
             # No ${{ secrets.GITHUB_TOKEN }} etc in pull_request_target workflows.
             secrets_where = contains(filename, fnvalue="${{ secrets.* }}")
             if secrets_where:
