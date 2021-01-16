@@ -28,6 +28,7 @@ ALL_STRINGS = {}
 
 # Allowed GH Actions
 ALLOWED_ACTIONS = [
+    re.compile(r"^\./\.github/.+$"),  # Repo-local action
     re.compile(r"^actions/.*$"),  # GitHub Common Actions
     re.compile(r"^github/.*$"),  # GitHub's own Action collection
     re.compile(r"^apache/.*$"),  # Apache's action collection
