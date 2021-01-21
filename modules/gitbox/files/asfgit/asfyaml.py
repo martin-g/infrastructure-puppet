@@ -509,11 +509,11 @@ def github(cfg, yml):
                     print("Could not set GitHub Pages configuration!")
             # Enabled, update settings?
             elif 200 <= rv.status_code < 300:
-                ghps = 'master /docs'
+                ghps = '%s /docs' % cfg.default_branch
                 if ghp_branch == 'gh-pages':
                     ghps = 'gh-pages'
                 elif not ghp_path:
-                    ghps = 'master'
+                    ghps = cfg.default_branch
                 try:
                     rv = requests.put(
                         GHP_URL,
