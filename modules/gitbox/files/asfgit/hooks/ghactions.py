@@ -95,7 +95,7 @@ def notify_private(cfg, subject, text):
     pname = m.group(1)
     pname = WSMAP.get(pname, pname)
     #  recps = ["private@%s.apache.org" % pname, "private@infra.apache.org"]
-    recps = ["private@infra.apache.org"]  # For now, send to projets later.
+    recps = ["notifications@infra.apache.org"]  # For now, send to projects later.
 
     # Tell project what happened, on private@
     asfpy.messaging.mail(
