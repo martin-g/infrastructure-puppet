@@ -40,7 +40,7 @@ def do_git_pull(path, branch):
     """Does a simple git pull from a deploy dir, syslog if it works or not"""
     os.chdir(path)
     try:
-        subprocess.check_output((GIT_CMD, 'pull', 'origin', branch))
+        subprocess.check_output((GIT_CMD, 'pull', 'origin', branch), stderr=subprocess.STDOUT)
         syslog.syslog(syslog.LOG_INFO, "Successfully completed `git pull` into %s" % path)
     except subprocess.CalledProcessError as e:
         syslog.syslog(syslog.LOG_WARNING, "Could not `git pull` new contents into %s: %s" % (path, e.output))
