@@ -26,14 +26,14 @@ yaml.constructor.SafeConstructor.bool_values["on"] = "on"
 # YAML String locator debug dict
 ALL_STRINGS = {}
 
-# Allowed GH Actions
+# Allowed GH Actions, in glob format
 ALLOWED_ACTIONS = [
-    re.compile(r"^\./\.github/.+$"),  # Repo-local action
-    re.compile(r"^actions/.*$"),  # GitHub Common Actions
-    re.compile(r"^github/.*$"),  # GitHub's own Action collection
-    re.compile(r"^apache/.*$"),  # Apache's action collection
-    re.compile(r"^[-a-z0-9]+/[-A-Za-z0-9]+@([a-f0-9]{7}|[a-f0-9]{40})$"),  # Any commit-pinned action
+    "actions/*",             # GitHub Common Actions
+    "github/*",              # GitHub's own Action collection
+    "apache/*",              # Apache's action collection
+    "*/*@" + "[a-f0-9]"*40,  # Any SHA1-pinned action (assuming it's been reviewed)
 ]
+
 
 
 def capture_string_location(self, node):
@@ -134,7 +134,7 @@ def scan_for_problems(yml, filename):
     for use_ref in get_values(yml, "uses"):
         good = False
         for am in ALLOWED_ACTIONS:
-            if am.match(use_ref):
+            if fnmatch.fnmatch(use_ref, am):
                 good = True
         if not good:
             problems += '- "%s" (%s) is not an allowed GitHub Actions reference.\n' % (
