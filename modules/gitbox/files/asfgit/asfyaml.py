@@ -510,10 +510,14 @@ def github(cfg, yml):
             # Enabled, update settings?
             elif 200 <= rv.status_code < 300:
                 ghps = '%s /docs' % cfg.default_branch
-                if ghp_branch == 'gh-pages':
-                    ghps = 'gh-pages'
-                elif not ghp_path:
-                    ghps = cfg.default_branch
+                if ghp_branch in ['main', 'master', 'gh-pages', cfg.default_branch]:
+                    if ghp_path == '/docs':
+                        ghps = ghp_branch + ' /docs'
+                    else:
+                        ghps = ghp_branch
+                else:
+                    print("Could not set GitHub Pages: Branch must be gh-pages or default branch!")
+                    return
                 try:
                     rv = requests.put(
                         GHP_URL,
