@@ -2,7 +2,7 @@
 
 class wicket_pvm_asf (
 
-  $required_packages = ['tomcat8' , 'openjdk-8-jdk', 'docker-engine'],
+  $required_packages = ['tomcat9' , 'openjdk-8-jdk', 'docker-engine'],
 
 ){
 
@@ -13,14 +13,6 @@ class wicket_pvm_asf (
   }
 
 # download wicket docker images from ASF Bintray instance - one for each version for demo.
-# for wicket-6
-  -> exec {
-    'download-wicket-docker-6':
-      command => '/usr/bin/docker pull apache-docker-wicket-docker.bintray.io/wicket-examples:LATEST-6',
-      timeout => 1200,
-      require => Package['docker-engine'],
-      notify  => Service['docker-wicket-demo-6'],
-  }
 # for wicket-7
   exec {
     'download-wicket-docker-7':
@@ -46,15 +38,6 @@ class wicket_pvm_asf (
       notify  => Service['docker-wicket-demo-9'],
   }
 
-
-  docker::run { 'wicket-demo-6':
-    image            => 'apache-docker-wicket-docker.bintray.io/wicket-examples:LATEST-6',
-    ports            => ['8086:8080'],
-    restart_service  => true,
-    privileged       => false,
-    pull_on_start    => true,
-    extra_parameters => [ '--restart=always' ],
-  }
 
   docker::run { 'wicket-demo-7':
     image            => 'apache-docker-wicket-docker.bintray.io/wicket-examples:LATEST-7',
